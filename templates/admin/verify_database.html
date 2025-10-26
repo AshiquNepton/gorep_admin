@@ -1,0 +1,510 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Database Structure{% endblock %}
+
+{% block content %}
+<style>
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="max-w-6xl mx-auto p-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-check-circle text-blue-600 mr-2"></i>Verify Database Structure
+        </h1>
+        <p class="text-gray-600">Compare your database structure with the expected schema and fix any differences</p>
+    </div>
+
+    <!-- Database Selection -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Select Database</h2>
+        
+        <div class="flex gap-4">
+            <div class="flex-1">
+                <select id="databaseSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Choose a database to verify...</option>
+                    {% for database in databases %}
+                    <option value="{{ database }}">{{ database }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button id="verifyBtn" onclick="verifyDatabase()" disabled
+                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium">
+                <i class="fas fa-search mr-2"></i>Verify Structure
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="hidden bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+        <div class="spinner mx-auto mb-4"></div>
+        <p class="text-gray-600 font-medium">Analyzing database structure...</p>
+    </div>
+
+    <!-- Results Container -->
+    <div id="resultsContainer" class="hidden">
+        <!-- Summary Card -->
+        <div id="summaryCard" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Verification Results</h2>
+                <span id="statusBadge" class="px-4 py-2 rounded-full text-sm font-medium"></span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="summaryStats"></div>
+        </div>
+
+        <!-- Missing Tables -->
+        <div id="missingTablesSection" class="hidden bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-red-600 mb-4">
+                <i class="fas fa-exclamation-triangle mr-2"></i>Missing Tables
+            </h3>
+            <div id="missingTablesList" class="space-y-2"></div>
+        </div>
+
+        <!-- Table Differences -->
+        <div id="tableDifferencesSection" class="hidden space-y-4 mb-6"></div>
+
+        <!-- Extra Tables (Informational) -->
+        <div id="extraTablesSection" class="hidden bg-blue-50 rounded-lg border border-blue-200 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-blue-700 mb-4">
+                <i class="fas fa-info-circle mr-2"></i>Additional Tables (Not in schema)
+            </h3>
+            <div id="extraTablesList" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- Fix Button -->
+        <div id="fixSection" class="hidden bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-green-800 mb-2">
+                        <i class="fas fa-tools mr-2"></i>Fix Database Structure
+                    </h3>
+                    <p class="text-green-700">Click the button below to automatically fix all the identified issues</p>
+                </div>
+                <button id="fixBtn" onclick="fixDatabase()"
+                    class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 font-medium">
+                    <i class="fas fa-wrench mr-2"></i>Fix All Issues
+                </button>
+            </div>
+        </div>
+
+        <!-- Success State (No Issues) -->
+        <div id="successSection" class="hidden bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 p-8 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <i class="fas fa-check text-green-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-green-800 mb-2">Database Structure is Perfect!</h3>
+            <p class="text-green-700">All tables and columns match the expected schema. No fixes needed.</p>
+        </div>
+    </div>
+
+    <!-- Fix Results Modal -->
+    <div id="fixResultsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full m-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900">Fix Results</h3>
+            </div>
+            <div id="fixResultsContent" class="flex-1 overflow-y-auto p-6"></div>
+            <div class="p-6 border-t border-gray-200 flex justify-end">
+                <button onclick="closeFixResultsModal()" 
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentDatabase = null;
+    let verificationResults = null;
+
+    // Enable verify button when database is selected
+    document.getElementById('databaseSelect').addEventListener('change', function() {
+        const verifyBtn = document.getElementById('verifyBtn');
+        if (this.value) {
+            verifyBtn.disabled = false;
+            currentDatabase = this.value;
+        } else {
+            verifyBtn.disabled = true;
+            currentDatabase = null;
+        }
+    });
+
+    function getCsrfToken() {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') return value;
+        }
+        return '';
+    }
+
+    async function verifyDatabase() {
+        if (!currentDatabase) {
+            alert('Please select a database');
+            return;
+        }
+
+        // Show loading state
+        document.getElementById('resultsContainer').classList.add('hidden');
+        document.getElementById('loadingState').classList.remove('hidden');
+
+        try {
+            const response = await fetch('/api/manage/verify-database/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({ database: currentDatabase })
+            });
+
+            const data = await response.json();
+
+            // CHECK FOR REDIRECT (means session expired)
+            if (response.status === 401) {
+                alert('Session expired. Please login again.');
+                window.location.href = '/login/';
+                return;
+            }
+
+            if (data.success) {
+                verificationResults = data.verification;
+                displayVerificationResults(data.verification);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            alert('Failed to verify database: ' + error.message);
+            console.error('Verification error:', error);
+        } finally {
+            document.getElementById('loadingState').classList.add('hidden');
+        }
+    }
+
+    async function fixDatabase() {
+        if (!currentDatabase || !verificationResults) {
+            alert('Please verify the database first');
+            return;
+        }
+
+        if (!confirm('This will modify your database structure. Are you sure you want to continue?')) {
+            return;
+        }
+
+        const fixBtn = document.getElementById('fixBtn');
+        fixBtn.disabled = true;
+        fixBtn.innerHTML = '<div class="spinner mr-2"></div>Fixing...';
+
+        try {
+            const response = await fetch('/api/manage/fix-database/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({ database: currentDatabase })
+            });
+
+            const data = await response.json();
+
+            // CHECK FOR REDIRECT (means session expired)
+            if (response.status === 401) {
+                alert('Session expired. Please login again.');
+                window.location.href = '/login/';
+                return;
+            }
+
+            if (data.success) {
+                displayFixResults(data.results);
+                // Re-verify after fixing
+                setTimeout(() => verifyDatabase(), 2000);
+            } else {
+                alert('Error fixing database: ' + data.error);
+            }
+        } catch (error) {
+            alert('Failed to fix database: ' + error.message);
+            console.error('Fix error:', error);
+        } finally {
+            fixBtn.disabled = false;
+            fixBtn.innerHTML = '<i class="fas fa-wrench mr-2"></i>Fix All Issues';
+        }
+    }
+
+    function displayVerificationResults(results) {
+        const container = document.getElementById('resultsContainer');
+        container.classList.remove('hidden');
+
+        // Update status badge
+        const statusBadge = document.getElementById('statusBadge');
+        if (results.has_differences) {
+            statusBadge.className = 'px-4 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800';
+            statusBadge.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i>Issues Found';
+        } else {
+            statusBadge.className = 'px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800';
+            statusBadge.innerHTML = '<i class="fas fa-check-circle mr-1"></i>All Good';
+        }
+
+        // Display summary stats
+        displaySummaryStats(results);
+
+        // Show/hide sections based on results
+        if (results.has_differences) {
+            if (results.missing_tables.length > 0) {
+                displayMissingTables(results.missing_tables);
+            }
+
+            if (Object.keys(results.table_differences).length > 0) {
+                displayTableDifferences(results.table_differences);
+            }
+
+            document.getElementById('fixSection').classList.remove('hidden');
+            document.getElementById('successSection').classList.add('hidden');
+        } else {
+            document.getElementById('missingTablesSection').classList.add('hidden');
+            document.getElementById('tableDifferencesSection').classList.add('hidden');
+            document.getElementById('fixSection').classList.add('hidden');
+            document.getElementById('successSection').classList.remove('hidden');
+        }
+
+        if (results.extra_tables.length > 0) {
+            displayExtraTables(results.extra_tables);
+        } else {
+            document.getElementById('extraTablesSection').classList.add('hidden');
+        }
+    }
+
+    function displaySummaryStats(results) {
+        const statsContainer = document.getElementById('summaryStats');
+        const missingTablesCount = results.missing_tables.length;
+        const tableDifferencesCount = Object.keys(results.table_differences).length;
+        const extraTablesCount = results.extra_tables.length;
+
+        statsContainer.innerHTML = `
+            <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                <div class="text-3xl font-bold text-red-600 mb-1">${missingTablesCount}</div>
+                <div class="text-sm text-red-700">Missing Tables</div>
+            </div>
+            <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                <div class="text-3xl font-bold text-orange-600 mb-1">${tableDifferencesCount}</div>
+                <div class="text-sm text-orange-700">Tables with Issues</div>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <div class="text-3xl font-bold text-blue-600 mb-1">${extraTablesCount}</div>
+                <div class="text-sm text-blue-700">Extra Tables</div>
+            </div>
+        `;
+    }
+
+    function displayMissingTables(missingTables) {
+        const section = document.getElementById('missingTablesSection');
+        const list = document.getElementById('missingTablesList');
+
+        if (missingTables.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+        list.innerHTML = missingTables.map(table => `
+            <div class="flex items-center p-3 bg-red-50 rounded-lg border border-red-200">
+                <i class="fas fa-table text-red-600 mr-3"></i>
+                <span class="font-mono text-red-800">${table}</span>
+            </div>
+        `).join('');
+    }
+
+    function displayTableDifferences(tableDifferences) {
+        const section = document.getElementById('tableDifferencesSection');
+
+        if (Object.keys(tableDifferences).length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+        section.innerHTML = '';
+
+        for (const [tableName, differences] of Object.entries(tableDifferences)) {
+            const tableCard = document.createElement('div');
+            tableCard.className = 'bg-white rounded-lg shadow-sm border border-gray-200 p-6';
+
+            let issuesHtml = '';
+
+            if (differences.missing_columns && differences.missing_columns.length > 0) {
+                issuesHtml += `
+                    <div class="mb-4">
+                        <h5 class="font-semibold text-orange-700 mb-2">
+                            <i class="fas fa-minus-circle mr-2"></i>Missing Columns (${differences.missing_columns.length})
+                        </h5>
+                        <div class="space-y-2">
+                            ${differences.missing_columns.map(col => `
+                                <div class="bg-orange-50 rounded p-3 border border-orange-200">
+                                    <div class="font-mono text-sm text-orange-800">
+                                        <strong>${col.name}</strong> - ${col.definition.type} ${col.definition.null === 'NO' ? 'NOT NULL' : 'NULL'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (differences.extra_columns && differences.extra_columns.length > 0) {
+                issuesHtml += `
+                    <div class="mb-4">
+                        <h5 class="font-semibold text-blue-700 mb-2">
+                            <i class="fas fa-info-circle mr-2"></i>Extra Columns (${differences.extra_columns.length})
+                        </h5>
+                        <div class="flex flex-wrap gap-2">
+                            ${differences.extra_columns.map(col => `
+                                <span class="px-3 py-1 bg-blue-50 text-blue-800 rounded-full text-sm font-mono border border-blue-200">${col}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (differences.type_mismatches && differences.type_mismatches.length > 0) {
+                issuesHtml += `
+                    <div>
+                        <h5 class="font-semibold text-yellow-700 mb-2">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Type Mismatches (${differences.type_mismatches.length})
+                        </h5>
+                        <div class="space-y-2">
+                            ${differences.type_mismatches.map(mismatch => `
+                                <div class="bg-yellow-50 rounded p-3 border border-yellow-200">
+                                    <div class="font-mono text-sm">
+                                        <strong class="text-yellow-800">${mismatch.column}</strong><br>
+                                        <span class="text-red-600">Current: ${mismatch.current_type}</span><br>
+                                        <span class="text-green-600">Expected: ${mismatch.expected_type}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            tableCard.innerHTML = `
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-table text-orange-600 mr-2"></i>${tableName}
+                </h4>
+                ${issuesHtml}
+            `;
+
+            section.appendChild(tableCard);
+        }
+    }
+
+    function displayExtraTables(extraTables) {
+        const section = document.getElementById('extraTablesSection');
+        const list = document.getElementById('extraTablesList');
+
+        if (extraTables.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+        list.innerHTML = extraTables.map(table => `
+            <span class="px-3 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-mono">${table}</span>
+        `).join('');
+    }
+
+    function displayFixResults(results) {
+        const content = document.getElementById('fixResultsContent');
+
+        let html = '<div class="space-y-4">';
+
+        if (results.tables_created && results.tables_created.length > 0) {
+            html += `
+                <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <h4 class="font-semibold text-green-800 mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>Tables Created (${results.tables_created.length})
+                    </h4>
+                    <ul class="list-disc list-inside text-green-700 space-y-1">
+                        ${results.tables_created.map(table => `<li class="font-mono">${table}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (results.columns_added && results.columns_added.length > 0) {
+            html += `
+                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <h4 class="font-semibold text-blue-800 mb-2">
+                        <i class="fas fa-plus-circle mr-2"></i>Columns Added (${results.columns_added.length})
+                    </h4>
+                    <ul class="list-disc list-inside text-blue-700 space-y-1">
+                        ${results.columns_added.map(col => `<li class="font-mono">${col}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (results.columns_modified && results.columns_modified.length > 0) {
+            html += `
+                <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                    <h4 class="font-semibold text-yellow-800 mb-2">
+                        <i class="fas fa-edit mr-2"></i>Columns Modified (${results.columns_modified.length})
+                    </h4>
+                    <ul class="list-disc list-inside text-yellow-700 space-y-1">
+                        ${results.columns_modified.map(col => `<li class="font-mono">${col}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (results.errors && results.errors.length > 0) {
+            html += `
+                <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                    <h4 class="font-semibold text-red-800 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Errors (${results.errors.length})
+                    </h4>
+                    <ul class="list-disc list-inside text-red-700 space-y-1">
+                        ${results.errors.map(error => `<li>${error}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (results.tables_created.length === 0 && results.columns_added.length === 0 && results.columns_modified.length === 0 && results.errors.length === 0) {
+            html += `
+                <div class="bg-green-50 rounded-lg p-6 text-center border border-green-200">
+                    <i class="fas fa-check-circle text-green-600 text-3xl mb-2"></i>
+                    <p class="text-green-800 font-medium">No changes were needed!</p>
+                </div>
+            `;
+        }
+
+        html += '</div>';
+        content.innerHTML = html;
+
+        document.getElementById('fixResultsModal').classList.remove('hidden');
+    }
+
+    function closeFixResultsModal() {
+        document.getElementById('fixResultsModal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeFixResultsModal();
+        }
+    });
+</script>
+{% endblock %}

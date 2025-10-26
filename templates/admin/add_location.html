@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Location</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-2xl mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-sm border">
+            <div class="p-6 border-b">
+                <h2 class="text-2xl font-semibold text-gray-900">Add Location</h2>
+                <p class="text-gray-600 mt-1">Add a new location or visit type to the system</p>
+            </div>
+
+            <div class="p-6">
+                <!-- Success Message -->
+                <div id="successMessage" class="hidden mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span id="successText"></span>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+
+                <form id="addLocationForm" class="space-y-6">
+                    <!-- Database Selection -->
+                    <div>
+                        <label for="databaseSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                            Select Database *
+                        </label>
+                        <select id="databaseSelect" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select a database...</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Choose the database to add location/visit type to</p>
+                    </div>
+
+                    <!-- Type Selection -->
+                    <div>
+                        <label for="typeSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                            Type *
+                        </label>
+                        <select id="typeSelect" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select type...</option>
+                            <option value="location">Location (Area)</option>
+                            <option value="visittype">Visit Type</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Choose whether to add a location area or visit type</p>
+                    </div>
+
+                    <!-- Location/VisitType Input -->
+                    <div id="itemInputSection" class="hidden">
+                        <label for="itemInput" class="block text-sm font-medium text-gray-700 mb-2">
+                            <span id="itemLabel">Item</span> *
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="itemInput" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Enter item name"
+                                   autocomplete="off">
+                            <div id="suggestionsList" class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto hidden"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1" id="itemHelp">Enter the name for the new item</p>
+                    </div>
+                        <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="parent.closeAddLocationModal()"
+                                class="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" id="addItemBtn"
+                                class="px-6 py-3 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 transition">
+                            <i class="fas fa-plus mr-1"></i> Add Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-exclamation-triangle text-orange-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Item Already Exists</h3>
+            </div>
+            <p class="text-gray-600 mb-6" id="confirmationText"></p>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeConfirmationModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let existingItems = [];
+        let selectedDatabase = '';
+        let selectedType = '';
+
+        // Helper function to get CSRF token
+        function getCsrfToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('errorMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        function showConfirmationModal(message) {
+            document.getElementById('confirmationText').textContent = message;
+            document.getElementById('confirmationModal').classList.remove('hidden');
+            document.getElementById('confirmationModal').classList.add('flex');
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById('confirmationModal').classList.add('hidden');
+            document.getElementById('confirmationModal').classList.remove('flex');
+        }
+
+        // Load available databases
+        async function loadDatabases() {
+            try {
+                const response = await fetch('/api/manage/databases/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('databaseSelect');
+                    select.innerHTML = '<option value="">Select a database...</option>';
+                    
+                    data.databases.forEach(db => {
+                        const option = document.createElement('option');
+                        option.value = db;
+                        option.textContent = db;
+                        select.appendChild(option);
+                    });
+                } else {
+                    showError('Failed to load databases: ' + data.error);
+                }
+            } catch (error) {
+                showError('Error loading databases: ' + error.message);
+            }
+        }
+
+        // Load existing items from ItemGroups table
+        async function loadExistingItems(database, category) {
+            try {
+                const response = await fetch(`/api/manage/itemgroups/?database=${encodeURIComponent(database)}&category=${category}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    existingItems = data.items;
+                    console.log(`Loaded ${existingItems.length} existing items for category ${category}`);
+                } else {
+                    console.error('Failed to load existing items:', data.error);
+                    existingItems = [];
+                }
+            } catch (error) {
+                console.error('Error loading existing items:', error);
+                existingItems = [];
+            }
+        }
+
+        // Show suggestions based on input
+        function showSuggestions(inputValue) {
+            const suggestionsList = document.getElementById('suggestionsList');
+            suggestionsList.innerHTML = '';
+            
+            if (!inputValue.trim()) {
+                suggestionsList.classList.add('hidden');
+                return;
+            }
+
+            const matches = existingItems.filter(item => 
+                item.Description.toLowerCase().includes(inputValue.toLowerCase())
+            );
+
+            if (matches.length > 0) {
+                matches.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-200';
+                    div.textContent = item.Description;
+                    div.onclick = () => {
+                        document.getElementById('itemInput').value = item.Description;
+                        suggestionsList.classList.add('hidden');
+                    };
+                    suggestionsList.appendChild(div);
+                });
+                suggestionsList.classList.remove('hidden');
+            } else {
+                suggestionsList.classList.add('hidden');
+            }
+        }
+
+        // Database selection change handler
+        document.getElementById('databaseSelect').addEventListener('change', async function() {
+            selectedDatabase = this.value;
+            
+            if (selectedDatabase && selectedType) {
+                const category = selectedType === 'location' ? 12 : 142;
+                await loadExistingItems(selectedDatabase, category);
+            }
+        });
+
+        // Type selection change handler
+        document.getElementById('typeSelect').addEventListener('change', async function() {
+            selectedType = this.value;
+            const inputSection = document.getElementById('itemInputSection');
+            const itemLabel = document.getElementById('itemLabel');
+            const itemHelp = document.getElementById('itemHelp');
+            
+            if (selectedType) {
+                if (selectedType === 'location') {
+                    itemLabel.textContent = 'Area Name';
+                    itemHelp.textContent = 'Enter the area/location name';
+                } else if (selectedType === 'visittype') {
+                    itemLabel.textContent = 'Visit Type Name';
+                    itemHelp.textContent = 'Enter the visit type name';
+                }
+                
+                inputSection.classList.remove('hidden');
+                
+                if (selectedDatabase && selectedType) {
+                    const category = selectedType === 'location' ? 12 : 142;
+                    await loadExistingItems(selectedDatabase, category);
+                }
+            } else {
+                inputSection.classList.add('hidden');
+            }
+        });
+
+        // Item input handler for suggestions
+        document.getElementById('itemInput').addEventListener('input', function() {
+            showSuggestions(this.value);
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#itemInputSection')) {
+                document.getElementById('suggestionsList').classList.add('hidden');
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('addLocationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('addItemBtn');
+            const originalText = btn.innerHTML;
+
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Creating...';
+                btn.disabled = true;
+
+                const database = document.getElementById('databaseSelect').value.trim();
+                const type = document.getElementById('typeSelect').value;
+                const itemName = document.getElementById('itemInput').value.trim();
+
+                // Validate form data
+                if (!database) {
+                    throw new Error('Database selection is required');
+                }
+                if (!type) {
+                    throw new Error('Type selection is required');
+                }
+                if (!itemName) {
+                    throw new Error(`${type === 'location' ? 'Area' : 'Visit type'} name is required`);
+                }
+
+                // Check if item already exists
+                const existsCheck = existingItems.find(item => 
+                    item.Description.toLowerCase() === itemName.toLowerCase()
+                );
+
+                if (existsCheck) {
+                    const typeName = type === 'location' ? 'Area' : 'Visit Type';
+                    showConfirmationModal(`${typeName} "${itemName}" already exists in the database.`);
+                    return;
+                }
+
+                const category = type === 'location' ? 12 : 142;
+
+                const response = await fetch('/api/manage/add-itemgroup/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        database: database,
+                        description: itemName,
+                        category: category,
+                        type: type
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const typeName = type === 'location' ? 'Area' : 'Visit Type';
+                    showSuccess(`${typeName} "${itemName}" added successfully with ID: ${data.group_id}`);
+
+                    // Reset form
+                    document.getElementById('itemInput').value = '';
+                    document.getElementById('suggestionsList').classList.add('hidden');
+
+                    // Reload existing items to include the new one
+                    await loadExistingItems(database, category);
+
+                    // Optionally close modal after a delay
+                    setTimeout(() => {
+                        if (parent.closeAddLocationModal) {
+                            parent.closeAddLocationModal();
+                        }
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || `Failed to add ${type}`);
+                }
+            } catch (error) {
+                console.error('Error adding item:', error);
+                showError('Failed to add item: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDatabases();
+        });
+    </script>
+</body>
+</html>

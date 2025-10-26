@@ -1,0 +1,488 @@
+{% extends 'base.html' %}
+
+{% block title %}Device Management - cPanel Database Manager{% endblock %}
+
+{% block content %}
+    <div class="max-w-6xl mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-sm border">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-900">Device Management</h2>
+                        <p class="text-gray-600 mt-1">Activate, deactivate, or block customer devices</p>
+                    </div>
+                    <button onclick="refreshDevices()"
+                            class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
+                        <i class="fas fa-sync-alt mr-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Search and Filter -->
+                <div class="mb-4 flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" id="searchInput"
+                               placeholder="Search by activation date, customer name, IMEI..."
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <select id="statusFilter"
+                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Statuses</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                        <option value="-1">Blocked</option>
+                    </select>
+                </div>
+
+                <!-- Devices Table -->
+                <div id="devicesContainer" class="table-wrapper custom-scrollbar">
+                    <div class="flex items-center justify-center py-8">
+                        <i class="fas fa-spinner fa-spin text-blue-500 text-2xl mr-2"></i>
+                        <span class="text-gray-600">Loading devices...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Messages -->
+        <div id="errorMessage" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span id="errorText"></span>
+            </div>
+        </div>
+
+        <!-- Success Messages -->
+        <div id="successMessage"
+             class="hidden mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span id="successText"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full m-4">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Action</h3>
+                <p id="confirmMessage" class="text-gray-600 mb-6"></p>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeConfirmModal()"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                    <button type="button" id="confirmButton"
+                            class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 transition">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let devices = [];
+        let filteredDevices = [];
+
+        function getCsrfToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('errorMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        function showConfirmModal(message, onConfirm) {
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmButton').onclick = () => {
+                closeConfirmModal();
+                onConfirm();
+            };
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function getStatusInfo(status) {
+            // Convert string to number if needed
+            const statusNum = parseInt(status);
+
+            switch (statusNum) {
+                case 1:
+                    return {
+                        text: 'Active',
+                        class: 'status-active',
+                        icon: 'fa-check-circle'
+                    };
+                case 0:
+                    return {
+                        text: 'Inactive',
+                        class: 'status-inactive',
+                        icon: 'fa-times-circle'
+                    };
+                case -1:
+                    return {
+                        text: 'Blocked',
+                        class: 'status-blocked',
+                        icon: 'fa-ban'
+                    };
+                default:
+                    console.log('Unknown status value:', status, 'Type:', typeof status);
+                    return {
+                        text: 'Unknown',
+                        class: 'status-unknown',
+                        icon: 'fa-question-circle'
+                    };
+            }
+        }
+
+        function getActionButtons(device) {
+            const deviceImei = device.deviceImei || device.imei;
+            const customerName = device.custName || 'Unknown';
+            const status = device.status;
+
+            if (!deviceImei) {
+                return '<span class="text-gray-500">No IMEI</span>';
+            }
+
+            // Escape quotes in customer name and device IMEI to prevent JavaScript errors
+            const escapedCustomerName = customerName.replace(/'/g, "\\'").replace(/"/g, '\\"');
+            const escapedDeviceImei = deviceImei.replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+            let buttons = [];
+
+            if (status === 1) {
+                // Active device - can be deactivated or blocked
+                buttons.push(`
+                    <button onclick="updateDeviceStatus('${escapedDeviceImei}', 0, '${escapedCustomerName}')"
+                            class="text-orange-600 hover:text-orange-900 px-3 py-1 rounded-lg border border-orange-300 hover:bg-orange-50 transition mr-2">
+                        <i class="fas fa-pause mr-1"></i>
+{#                        Deactivate#}
+                    </button>
+                `);
+                buttons.push(`
+                    <button onclick="updateDeviceStatus('${escapedDeviceImei}', -1, '${escapedCustomerName}')"
+                            class="text-red-600 hover:text-red-900 px-3 py-1 rounded-lg border border-red-300 hover:bg-red-50 transition">
+                        <i class="fas fa-ban mr-1"></i>
+{#                        Block#}
+                    </button>
+                `);
+            } else if (status === 0) {
+                // Inactive device - can be activated or blocked
+                buttons.push(`
+                    <button onclick="updateDeviceStatus('${escapedDeviceImei}', 1, '${escapedCustomerName}')"
+                            class="text-green-600 hover:text-green-900 px-3 py-1 rounded-lg border border-green-300 hover:bg-green-50 transition mr-2">
+                        <i class="fas fa-check mr-1"></i>Activate
+                    </button>
+                `);
+                buttons.push(`
+                    <button onclick="updateDeviceStatus('${escapedDeviceImei}', -1, '${escapedCustomerName}')"
+                            class="text-red-600 hover:text-red-900 px-3 py-1 rounded-lg border border-red-300 hover:bg-red-50 transition">
+                        <i class="fas fa-ban mr-1"></i>Block
+                    </button>
+                `);
+            } else if (status === -1) {
+                // Blocked device - can only be activated
+                buttons.push(`
+                    <button onclick="updateDeviceStatus('${escapedDeviceImei}', 1, '${escapedCustomerName}')"
+                            class="text-green-600 hover:text-green-900 px-3 py-1 rounded-lg border border-green-300 hover:bg-green-50 transition">
+                        <i class="fas fa-check mr-1"></i>Unblock &amp; Activate
+                    </button>
+                `);
+            }
+
+            return buttons.join('');
+        }
+
+        async function loadDevices() {
+            try {
+                const response = await fetch('/api/manage/devices/', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    devices = data.devices;
+                    filteredDevices = devices;
+                    renderDevices();
+                } else {
+                    throw new Error(data.error || 'Failed to load devices');
+                }
+            } catch (error) {
+                console.error('Error loading devices:', error);
+                showError('Failed to load devices: ' + error.message);
+                renderError();
+            }
+        }
+
+        function renderDevices() {
+            const container = document.getElementById('devicesContainer');
+
+            if (filteredDevices.length === 0) {
+                container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="max-w-md mx-auto">
+                        <div class="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-mobile-alt text-gray-400 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No devices found</h3>
+                        <p class="text-gray-500">No devices match your current filters</p>
+                    </div>
+                </div>
+            `;
+                return;
+            }
+
+            const tableHTML = `
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activation Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device IMEI</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    ${filteredDevices.map(device => {
+                        const statusInfo = getStatusInfo(device.status);
+                        // Format activation date
+                        let activationDate = 'N/A';
+                        if (device.activationDate) {
+                            try {
+                                const date = new Date(device.activationDate);
+                                activationDate = date.toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            } catch (e) {
+                                activationDate = device.activationDate;
+                            }
+                        }
+
+                        return `
+                            <tr class="table-row-hover">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    ${activationDate}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    ${device.custName || 'Unknown Customer'}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    ${device.deviceImei || device.imei || 'N/A'}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="${statusInfo.class}">
+                                        <i class="fas ${statusInfo.icon} mr-1"></i>
+                                        ${statusInfo.text}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    ${getActionButtons(device)}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        function renderError() {
+            const container = document.getElementById('devicesContainer');
+            container.innerHTML = `
+            <div class="text-center py-8">
+                <div class="max-w-md mx-auto">
+                    <div class="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-circle text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Failed to Load Devices</h3>
+                    <p class="text-gray-500 mb-4">There was an error loading the device list</p>
+                    <button onclick="loadDevices()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        `;
+        }
+
+        async function updateDeviceStatus(deviceImei, newStatus, customerName) {
+            const actionMap = {
+                1: 'activate',
+                0: 'deactivate',
+                '-1': 'block'
+            };
+
+            const action = actionMap[newStatus] || 'update';
+            let message = `Are you sure you want to ${action} the device (IMEI: ${deviceImei}) for customer "${customerName}"?`;
+
+            if (newStatus === 1) {
+                const currentDevice = devices.find(d => (d.deviceImei || d.imei) === deviceImei);
+                if (currentDevice && currentDevice.status === -1) {
+                    message = `Are you sure you want to unblock and activate the device (IMEI: ${deviceImei}) for customer "${customerName}"?`;
+                }
+            }
+
+            showConfirmModal(message, async () => {
+                try {
+                    const response = await fetch('/api/manage/update-device-status/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken()
+                        },
+                        body: JSON.stringify({
+                            device_imei: deviceImei,
+                            status: newStatus
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showSuccess(data.message);
+                        // Update the device in our local array using deviceImei to find it
+                        const deviceIndex = devices.findIndex(d => (d.deviceImei || d.imei) === deviceImei);
+                        if (deviceIndex !== -1) {
+                            devices[deviceIndex].status = newStatus;
+                            applyFilters();
+                        }
+                    } else {
+                        throw new Error(data.error || `Failed to ${action} device`);
+                    }
+                } catch (error) {
+                    console.error(`Error ${action}ing device:`, error);
+                    showError(`Failed to ${action} device: ` + error.message);
+                }
+            });
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredDevices = devices.filter(device => {
+                const matchesSearch = !searchTerm ||
+                    (device.activationDate && device.activationDate.toString().toLowerCase().includes(searchTerm)) ||
+                    (device.custName && device.custName.toLowerCase().includes(searchTerm)) ||
+                    (device.deviceImei && device.deviceImei.toLowerCase().includes(searchTerm)) ||
+                    (device.imei && device.imei.toLowerCase().includes(searchTerm));
+
+                const matchesStatus = !statusFilter || (device.status !== null && device.status !== undefined && device.status.toString() === statusFilter);
+
+                return matchesSearch && matchesStatus;
+            });
+
+            renderDevices();
+        }
+
+        function refreshDevices() {
+            loadDevices();
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            loadDevices();
+
+            // Set up search and filter event listeners
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeConfirmModal();
+                }
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('confirmModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeConfirmModal();
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .status-active {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;
+        }
+
+        .status-inactive {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800;
+        }
+
+        .status-blocked {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800;
+        }
+
+        .status-unknown {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800;
+        }
+
+        .table-row-hover:hover {
+            @apply bg-gray-50;
+        }
+
+        .table-wrapper {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-2xl mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-sm border">
+            <div class="p-6 border-b">
+                <h2 class="text-2xl font-semibold text-gray-900">Add Admin User</h2>
+                <p class="text-gray-600 mt-1">Create a new administrator with customer access</p>
+            </div>
+
+            <div class="p-6">
+                <!-- Success Message -->
+                <div id="successMessage" class="hidden mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span id="successText"></span>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+
+                <form id="addAdminForm" class="space-y-6">
+                    <div>
+                        <label for="adminUsername" class="block text-sm font-medium text-gray-700 mb-2">
+                            Admin Username *
+                        </label>
+                        <input type="text" id="adminUsername" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Enter admin username">
+                        <p class="text-xs text-gray-500 mt-1">This will be used as the admin's login username</p>
+                    </div>
+
+                    <div>
+                        <label for="adminPassword" class="block text-sm font-medium text-gray-700 mb-2">
+                            Admin Password *
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="adminPassword" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
+                                   placeholder="Enter admin password">
+                            <button type="button" id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye" id="passwordIcon"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Choose a strong password for the admin account</p>
+                    </div>
+
+                    <div>
+                        <label for="assignedCustomer" class="block text-sm font-medium text-gray-700 mb-2">
+                            Assigned Customer *
+                        </label>
+                        <select id="assignedCustomer" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Loading customers...</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Select the customer this admin will manage</p>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="parent.closeAddAdminModal()"
+                                class="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" id="addAdminBtn"
+                                class="px-6 py-3 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 transition">
+                            <i class="fas fa-user-shield mr-1"></i> Add Admin
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Helper function to get CSRF token
+        function getCsrfToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('errorMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        // Load customers
+        async function loadCustomers() {
+            try {
+                const response = await fetch('/api/manage/customers/', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('assignedCustomer');
+                    select.innerHTML = '<option value="">Select a customer...</option>';
+
+                    data.customers.forEach(customer => {
+                        const option = document.createElement('option');
+                        option.value = customer.custId;
+                        option.textContent = `${customer.custName} (ID: ${customer.custId})`;
+                        select.appendChild(option);
+                    });
+                } else {
+                    throw new Error(data.error || 'Failed to load customers');
+                }
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                showError('Failed to load customers: ' + error.message);
+            }
+        }
+
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('adminPassword');
+            const passwordIcon = document.getElementById('passwordIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Handle admin creation
+        document.getElementById('addAdminForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('addAdminBtn');
+            const originalText = btn.innerHTML;
+
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Creating...';
+                btn.disabled = true;
+
+                const formData = {
+                    username: document.getElementById('adminUsername').value.trim(),
+                    password: document.getElementById('adminPassword').value,
+                    customer_id: parseInt(document.getElementById('assignedCustomer').value)
+                };
+
+                // Validate form data
+                if (!formData.username) {
+                    throw new Error('Username is required');
+                }
+                if (!formData.password) {
+                    throw new Error('Password is required');
+                }
+                if (!formData.customer_id) {
+                    throw new Error('Please select a customer');
+                }
+
+                const response = await fetch('/api/manage/add-admin/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccess(`Admin user "${formData.username}" created successfully with Group ID: ${data.group_id}`);
+
+                    // Reset form
+                    document.getElementById('addAdminForm').reset();
+
+                    // Optionally close modal after a delay
+                    setTimeout(() => {
+                        if (parent.closeAddAdminModal) {
+                            parent.closeAddAdminModal();
+                        }
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Failed to create admin');
+                }
+            } catch (error) {
+                console.error('Error creating admin:', error);
+                showError('Failed to create admin: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCustomers();
+        });
+    </script>
+</body>
+</html>

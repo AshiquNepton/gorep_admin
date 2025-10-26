@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-2xl mx-auto p-6">
+        <!-- Step 1: Create Database -->
+        <div id="step1" class="bg-white rounded-lg shadow-sm border">
+            <div class="p-6 border-b">
+                <h2 class="text-2xl font-semibold text-gray-900">Create New Database</h2>
+                <p class="text-gray-600 mt-1">Step 1 of 2: Database Configuration</p>
+            </div>
+
+            <div class="p-6">
+                <form id="createDatabaseForm" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label for="databaseName" class="block text-sm font-medium text-gray-700 mb-2">
+                            Database Name *
+                        </label>
+                        <input type="text" id="databaseName" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Enter database name">
+                        <p class="text-xs text-gray-500 mt-1">Database name should be unique and contain only letters, numbers, and underscores</p>
+                    </div>
+
+                    <div>
+                        <label for="databaseUser" class="block text-sm font-medium text-gray-700 mb-2">
+                            Database User *
+                        </label>
+                        <select id="databaseUser" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select a user...</option>
+                            {% for user in db_users %}
+                            <option value="{{ user }}">{{ user }}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Select the MySQL user that will own this database</p>
+                    </div>
+
+                    <div>
+                        <label for="expiryYears" class="block text-sm font-medium text-gray-700 mb-2">
+                            Expiry (Years) *
+                        </label>
+                        <input type="number" id="expiryYears" value="1" min="1" max="10" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">Number of years before the database expires</p>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeModal()"
+                                class="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" id="createDbBtn"
+                                class="px-6 py-3 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 transition">
+                            <i class="fas fa-database mr-1"></i> Create Database
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loading Step - Shows during database and table creation -->
+        <div id="loadingStep" class="bg-white rounded-lg shadow-sm border hidden">
+            <div class="p-8 text-center">
+                <div class="relative mb-6">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i class="fas fa-database text-blue-600 text-lg"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2" id="loadingTitle">Creating Database...</h3>
+                <p class="text-gray-600 mb-4" id="loadingDescription">Please wait while we create your database and set up the required tables.</p>
+
+                <!-- Progress Steps -->
+                <div class="space-y-3 text-sm text-left max-w-md mx-auto">
+                    <div class="flex items-center" id="step-database">
+                        <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-spinner fa-spin text-blue-600 text-xs"></i>
+                        </div>
+                        <span class="text-gray-700">Creating database via cPanel...</span>
+                    </div>
+
+                    <div class="flex items-center" id="step-privileges">
+                        <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-clock text-gray-400 text-xs"></i>
+                        </div>
+                        <span class="text-gray-400">Setting user privileges...</span>
+                    </div>
+
+                    <div class="flex items-center" id="step-tables">
+                        <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-clock text-gray-400 text-xs"></i>
+                        </div>
+                        <span class="text-gray-400">Creating database tables...</span>
+                    </div>
+
+                    <div class="flex items-center" id="step-software">
+                        <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-clock text-gray-400 text-xs"></i>
+                        </div>
+                        <span class="text-gray-400">Registering software entry...</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-xs text-gray-500">
+                    This may take a few moments. Please do not close this window.
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Create Customer -->
+        <div id="step2" class="bg-white rounded-lg shadow-sm border hidden">
+            <div class="p-6 border-b">
+                <h2 class="text-2xl font-semibold text-gray-900">Create Customer</h2>
+                <p class="text-gray-600 mt-1">Step 2 of 2: Customer Information</p>
+                <div class="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div class="flex items-center text-green-800">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span class="text-sm font-medium">Database created successfully with all tables!</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <form id="createCustomerForm" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label for="customerName" class="block text-sm font-medium text-gray-700 mb-2">
+                            Customer Name *
+                        </label>
+                        <input type="text" id="customerName" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Enter customer name">
+                    </div>
+
+                    <div>
+                        <label for="customerLocation" class="block text-sm font-medium text-gray-700 mb-2">
+                            Location *
+                        </label>
+                        <input type="text" id="customerLocation" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Enter customer location">
+                    </div>
+
+                    <div>
+                        <label for="customerExpiryDate" class="block text-sm font-medium text-gray-700 mb-2">
+                            Expiry Date *
+                        </label>
+                        <input type="date" id="customerExpiryDate" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="goBackToStep1()"
+                                class="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition">
+                            <i class="fas fa-arrow-left mr-1"></i> Back
+                        </button>
+                        <button type="submit" id="createCustomerBtn"
+                                class="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-user mr-1"></i> Create Customer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Success Step -->
+        <div id="successStep" class="bg-white rounded-lg shadow-sm border hidden">
+            <div class="p-6 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <i class="fas fa-check text-green-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Database and Customer Created Successfully!</h3>
+                <p class="text-gray-600 mb-6">The database with all required tables and customer have been created and configured.</p>
+                <button onclick="closeModalAndRefresh()"
+                        class="px-6 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition">
+                    <i class="fas fa-check mr-1"></i> Done
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Messages -->
+        <div id="errorMessage" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span id="errorText"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let createdDatabaseInfo = {};
+
+        // Helper function to get CSRF token
+        function getCsrfToken() {
+            // Try to get from meta tag first
+            const metaToken = document.querySelector('meta[name="csrf-token"]');
+            if (metaToken) {
+                return metaToken.getAttribute('content');
+            }
+
+            // Fallback to cookie method
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+
+        function closeModal() {
+            try {
+                if (parent && parent.closeCreateDatabaseModal) {
+                    parent.closeCreateDatabaseModal();
+                }
+            } catch (e) {
+                console.log('Could not access parent window');
+            }
+        }
+
+        function closeModalAndRefresh() {
+            try {
+                if (parent && parent.closeCreateDatabaseModal) {
+                    parent.closeCreateDatabaseModal();
+                    if (parent.location) {
+                        parent.location.reload();
+                    }
+                }
+            } catch (e) {
+                console.log('Could not access parent window');
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+
+            // Hide loading step if showing
+            document.getElementById('loadingStep').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('errorMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        function updateProgressStep(stepId, status) {
+            const step = document.getElementById(stepId);
+            if (!step) {
+                console.warn(`Step element with ID '${stepId}' not found`);
+                return;
+            }
+
+            const icon = step.querySelector('i');
+            const iconContainer = step.querySelector('div');
+            const text = step.querySelector('span');
+
+            if (!icon || !iconContainer || !text) {
+                console.warn(`Missing elements in step '${stepId}'`);
+                return;
+            }
+
+            if (status === 'active') {
+                iconContainer.className = 'flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3';
+                icon.className = 'fas fa-spinner fa-spin text-blue-600 text-xs';
+                text.className = 'text-blue-700 font-medium';
+            } else if (status === 'completed') {
+                iconContainer.className = 'flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3';
+                icon.className = 'fas fa-check text-green-600 text-xs';
+                text.className = 'text-green-700';
+            } else if (status === 'error') {
+                iconContainer.className = 'flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mr-3';
+                icon.className = 'fas fa-times text-red-600 text-xs';
+                text.className = 'text-red-700';
+            }
+        }
+
+        function goBackToStep1() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        }
+
+        // Load database users
+        async function loadDatabaseUsers() {
+            try {
+                console.log('Loading database users...');
+                const response = await fetch('/api/manage/database-users/', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                console.log('Response status:', response.status);
+
+                // Check if response is actually JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Expected JSON but got:', text.substring(0, 200));
+                    throw new Error('Server returned HTML instead of JSON. Check authentication and URL.');
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    const select = document.getElementById('databaseUser');
+                    select.innerHTML = '<option value="">Select a user...</option>';
+
+                    if (data.users && data.users.length > 0) {
+                        data.users.forEach(user => {
+                            const option = document.createElement('option');
+                            option.value = user;
+                            option.textContent = user;
+                            select.appendChild(option);
+                        });
+                    } else {
+                        select.innerHTML = '<option value="">No users found</option>';
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to load users');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showError('Failed to load database users: ' + error.message);
+
+                // Set fallback option
+                const select = document.getElementById('databaseUser');
+                select.innerHTML = '<option value="">Failed to load users</option>';
+            }
+        }
+
+        // Set default expiry date
+        function setDefaultExpiryDate() {
+            const expiryYears = parseInt(document.getElementById('expiryYears').value) || 1;
+            const expiryDate = new Date();
+            expiryDate.setFullYear(expiryDate.getFullYear() + expiryYears);
+
+            document.getElementById('customerExpiryDate').value = expiryDate.toISOString().split('T')[0];
+        }
+
+        // Handle database creation with enhanced progress tracking
+        document.getElementById('createDatabaseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('createDbBtn');
+            const originalText = btn.innerHTML;
+
+            try {
+                // Show loading step and hide form
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('loadingStep').classList.remove('hidden');
+
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Creating...';
+                btn.disabled = true;
+
+                const formData = {
+                    database_name: document.getElementById('databaseName').value.trim(),
+                    database_user: document.getElementById('databaseUser').value,
+                    expiry_years: parseInt(document.getElementById('expiryYears').value)
+                };
+
+                console.log('Sending create database request with data:', formData);
+
+                // Update progress to show database creation is active
+                updateProgressStep('step-database', 'active');
+
+                const response = await fetch('/api/manage/create-database/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(formData)
+                });
+
+                console.log('Create database response status:', response.status);
+
+                // Check if response is actually JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Expected JSON but got:', text.substring(0, 200));
+                    throw new Error('Server returned HTML instead of JSON. This usually indicates a server error or authentication issue.');
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Create database response data:', data);
+
+                if (data.success) {
+                    // Mark all steps as completed
+                    updateProgressStep('step-database', 'completed');
+                    updateProgressStep('step-privileges', 'completed');
+                    updateProgressStep('step-tables', 'completed');
+                    updateProgressStep('step-software', 'completed');
+
+                    // Update loading text to show completion
+                    document.getElementById('loadingTitle').textContent = 'Database Created Successfully!';
+                    document.getElementById('loadingDescription').textContent = 'Database, user privileges, tables, and software entry have been created successfully.';
+
+                    // Wait a moment to show completion, then proceed to customer form
+                    setTimeout(() => {
+                        createdDatabaseInfo = formData;
+                        document.getElementById('loadingStep').classList.add('hidden');
+                        document.getElementById('step2').classList.remove('hidden');
+                        setDefaultExpiryDate();
+                    }, 2000);
+
+                } else {
+                    throw new Error(data.error || 'Failed to create database');
+                }
+            } catch (error) {
+                console.error('Error creating database:', error);
+                updateProgressStep('step-database', 'error');
+                showError('Failed to create database: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Handle customer creation
+        document.getElementById('createCustomerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('createCustomerBtn');
+            const originalText = btn.innerHTML;
+
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Creating...';
+                btn.disabled = true;
+
+                const formData = {
+                    customer_name: document.getElementById('customerName').value.trim(),
+                    location: document.getElementById('customerLocation').value.trim(),
+                    expiry_date: document.getElementById('customerExpiryDate').value
+                };
+
+                console.log('Sending create customer request with data:', formData);
+
+                const response = await fetch('/api/manage/create-customer/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(formData)
+                });
+
+                console.log('Create customer response status:', response.status);
+
+                // Check if response is actually JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Expected JSON but got:', text.substring(0, 200));
+                    throw new Error('Server returned HTML instead of JSON. Check authentication and URL.');
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Create customer response data:', data);
+
+                if (data.success) {
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('successStep').classList.remove('hidden');
+                } else {
+                    throw new Error(data.error || 'Failed to create customer');
+                }
+            } catch (error) {
+                console.error('Error creating customer:', error);
+                showError('Failed to create customer: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Update expiry date when years change
+        document.getElementById('expiryYears').addEventListener('input', setDefaultExpiryDate);
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            setDefaultExpiryDate();
+
+            // Check if users were loaded from template
+            const userSelect = document.getElementById('databaseUser');
+            if (userSelect.children.length <= 1) {
+                // No users loaded from template, try to load via AJAX as fallback
+                console.log('No users loaded from template, loading via AJAX...');
+                loadDatabaseUsers();
+            } else {
+                console.log('Users loaded from template:', userSelect.children.length - 1, 'users');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Permission</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-2xl mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-sm border">
+            <div class="p-6 border-b">
+                <h2 class="text-2xl font-semibold text-gray-900">Employee Management</h2>
+                <p class="text-gray-600 mt-1">Manage employee passwords and permissions</p>
+            </div>
+
+            <div class="p-6">
+                <!-- Success Message -->
+                <div id="successMessage" class="hidden mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span id="successText"></span>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+
+                <form id="addPermissionForm" class="space-y-6">
+                    <!-- Database Selection -->
+                    <div>
+                        <label for="databaseSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                            Select Database *
+                        </label>
+                        <select id="databaseSelect" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Loading databases...</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Choose the database to manage employees</p>
+                    </div>
+
+                    <!-- Employee Selection -->
+                    <div id="employeeSection" class="hidden">
+                        <label for="employeeSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                            Select Employee *
+                        </label>
+                        <select id="employeeSelect" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select an employee...</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Choose employee to manage password and permissions</p>
+                    </div>
+
+                    <!-- Password Section -->
+                    <div id="passwordSection" class="hidden">
+                        <label for="employeePassword" class="block text-sm font-medium text-gray-700 mb-2">
+                            Employee Password *
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="employeePassword" required
+                                   class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Enter employee password" maxlength="10">
+                            <button type="button" id="togglePassword"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Password will be saved to Employee table (max 10 characters)</p>
+                    </div>
+
+                    <!-- Permissions Section -->
+                    <div id="permissionsSection" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                            Permissions
+                        </label>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                <input type="checkbox" id="repWiseCustomer"
+                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                <div class="ml-3">
+                                    <span class="text-sm font-medium text-gray-700">Rep-wise Customer Access</span>
+                                    <p class="text-xs text-gray-500">Allow employee to access customers assigned to them</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="parent.closeAddPermissionModal()"
+                                class="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" id="savePermissionBtn" disabled
+                                class="px-6 py-3 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-lg hover:bg-orange-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                            <i class="fas fa-save mr-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDatabase = '';
+        let selectedEmployee = null;
+        let availableDatabases = [];
+
+        // Helper function to get CSRF token
+        function getCsrfToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('errorMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('employeePassword');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Load available databases (same function as dashboard)
+        async function loadDatabases() {
+            try {
+                let databases = [];
+
+                // Try to get databases from parent window (dashboard) first
+                if (window.parent && window.parent !== window) {
+                    try {
+                        // Access the databases array from the dashboard
+                        if (window.parent.dashboardDatabases && window.parent.dashboardDatabases.length > 0) {
+                            databases = window.parent.dashboardDatabases;
+                            console.log('Loaded databases from parent window:', databases);
+                        }
+                    } catch (e) {
+                        console.log('Could not access parent databases:', e);
+                    }
+                }
+
+                // If no databases from parent, try to get from cPanel API
+                if (databases.length === 0) {
+                    try {
+                        const response = await fetch('/admin/api/databases/', {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRFToken': getCsrfToken()
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.success && data.databases) {
+                                databases = data.databases;
+                                console.log('Loaded databases from API:', databases);
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Database API error:', e);
+                    }
+                }
+
+                const select = document.getElementById('databaseSelect');
+                select.innerHTML = '<option value="">Select a database...</option>';
+
+                databases.forEach(dbName => {
+                    const option = document.createElement('option');
+                    option.value = dbName;
+                    option.textContent = dbName;
+                    select.appendChild(option);
+                });
+
+                availableDatabases = databases;
+                console.log('Final loaded databases:', databases);
+
+            } catch (error) {
+                console.error('Error loading databases:', error);
+                showError('Failed to load databases: ' + error.message);
+            }
+        }
+
+        // Load employees from selected database
+        async function loadEmployees(databaseName) {
+            console.log(`=== LOADING EMPLOYEES DEBUG START ===`);
+            console.log(`Database: ${databaseName}`);
+
+            try {
+                const url = `/api/manage/employees/?database=${encodeURIComponent(databaseName)}`;
+                console.log(`Request URL: ${url}`);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                console.log(`Response status: ${response.status}`);
+                console.log(`Response headers:`, response.headers);
+                console.log(`Response content-type: ${response.headers.get('content-type')}`);
+
+                // Check if response is actually JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Response is not JSON!');
+                    const textResponse = await response.text();
+                    console.error('Response text:', textResponse.substring(0, 500));
+                    throw new Error(`Server returned ${contentType || 'unknown content type'} instead of JSON. This usually means an error page was returned.`);
+                }
+
+                if (!response.ok) {
+                    console.error(`HTTP error! status: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText.substring(0, 500));
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                let data;
+                try {
+                    data = await response.json();
+                    console.log('Parsed JSON data:', data);
+                } catch (jsonError) {
+                    console.error('JSON parsing failed:', jsonError);
+                    const textResponse = await response.text();
+                    console.error('Raw response text:', textResponse.substring(0, 500));
+                    throw new Error('Failed to parse JSON response. Server may have returned HTML error page.');
+                }
+
+                if (data.success) {
+                    console.log(`Successfully loaded ${data.employees.length} employees`);
+
+                    const select = document.getElementById('employeeSelect');
+                    select.innerHTML = '<option value="">Select an employee...</option>';
+
+                    data.employees.forEach(employee => {
+                        const option = document.createElement('option');
+                        option.value = employee.empId;
+                        option.textContent = `${employee.empName} (ID: ${employee.empId})`;
+                        option.setAttribute('data-employee', JSON.stringify(employee));
+                        select.appendChild(option);
+                    });
+
+                    document.getElementById('employeeSection').classList.remove('hidden');
+                    console.log('Employee section shown successfully');
+                } else {
+                    console.error('API returned success=false:', data);
+                    throw new Error(data.error || 'Unknown error from server');
+                }
+            } catch (error) {
+                console.error('=== ERROR LOADING EMPLOYEES ===');
+                console.error('Error type:', error.constructor.name);
+                console.error('Error message:', error.message);
+                console.error('Full error:', error);
+
+                // Provide more specific error messages
+                let userMessage = 'Failed to load employees: ';
+
+                if (error.message.includes('content type')) {
+                    userMessage += 'Server returned an error page instead of data. Please check your session and try logging in again.';
+                } else if (error.message.includes('JSON')) {
+                    userMessage += 'Server response was not valid JSON. This may indicate a server error or session timeout.';
+                } else if (error.message.includes('HTTP')) {
+                    userMessage += 'Server returned an error. Please check your database connection settings.';
+                } else {
+                    userMessage += error.message;
+                }
+
+                showError(userMessage);
+
+                // Hide employee section on error
+                document.getElementById('employeeSection').classList.add('hidden');
+            }
+        }
+
+        // Database selection handler
+        document.getElementById('databaseSelect').addEventListener('change', function() {
+            const selectedDb = this.value;
+
+            if (selectedDb) {
+                selectedDatabase = selectedDb;
+                loadEmployees(selectedDb);
+
+                // Hide other sections
+                document.getElementById('passwordSection').classList.add('hidden');
+                document.getElementById('permissionsSection').classList.add('hidden');
+{#                document.getElementById('infoSection').classList.add('hidden');#}
+                document.getElementById('savePermissionBtn').disabled = true;
+            } else {
+                document.getElementById('employeeSection').classList.add('hidden');
+                document.getElementById('passwordSection').classList.add('hidden');
+                document.getElementById('permissionsSection').classList.add('hidden');
+{#                document.getElementById('infoSection').classList.add('hidden');#}
+            }
+        });
+
+        // Employee selection handler
+        document.getElementById('employeeSelect').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+
+            if (selectedOption.value) {
+                selectedEmployee = JSON.parse(selectedOption.getAttribute('data-employee'));
+
+                // Show password and permissions sections
+                document.getElementById('passwordSection').classList.remove('hidden');
+                document.getElementById('permissionsSection').classList.remove('hidden');
+{#                document.getElementById('infoSection').classList.remove('hidden');#}
+
+                // Pre-fill current password if exists
+                document.getElementById('employeePassword').value = selectedEmployee.pwd || '';
+
+                document.getElementById('savePermissionBtn').disabled = false;
+            } else {
+                document.getElementById('passwordSection').classList.add('hidden');
+                document.getElementById('permissionsSection').classList.add('hidden');
+{#                document.getElementById('infoSection').classList.add('hidden');#}
+                document.getElementById('savePermissionBtn').disabled = true;
+            }
+        });
+
+        // Form submission - FIXED URL
+        document.getElementById('addPermissionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('savePermissionBtn');
+            const originalText = btn.innerHTML;
+
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving...';
+                btn.disabled = true;
+
+                const formData = {
+                    database: selectedDatabase,
+                    employee_id: selectedEmployee.empId,
+                    employee_name: selectedEmployee.empName,
+                    password: document.getElementById('employeePassword').value.trim(),
+                    rep_wise_customer: document.getElementById('repWiseCustomer').checked
+                };
+
+                // Validate form data
+                if (!formData.password) {
+                    throw new Error('Password is required');
+                }
+                if (formData.password.length > 10) {
+                    throw new Error('Password cannot exceed 10 characters');
+                }
+
+                console.log('Sending request to:', '/api/manage/update-employee-permission/');
+                console.log('Form data:', formData);
+
+                // FIXED: Use absolute URL instead of relative
+                const response = await fetch('/api/manage/update-employee-permission/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken(),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response content-type:', response.headers.get('content-type'));
+
+                // Check if response is actually JSON before parsing
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const textResponse = await response.text();
+                    console.error('Non-JSON response:', textResponse.substring(0, 500));
+                    throw new Error('Server returned an error page instead of JSON. Please check your session and try logging in again.');
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('HTTP error response:', errorText);
+                    throw new Error(`Server error (${response.status}): ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    showSuccess(`Employee "${selectedEmployee.empName}" updated successfully. Password saved and permissions applied.`);
+
+                    // Reset form after short delay
+                    setTimeout(() => {
+                        document.getElementById('addPermissionForm').reset();
+                        document.getElementById('employeeSection').classList.add('hidden');
+                        document.getElementById('passwordSection').classList.add('hidden');
+                        document.getElementById('permissionsSection').classList.add('hidden');
+{#                        document.getElementById('infoSection').classList.add('hidden');#}
+                        selectedDatabase = '';
+                        selectedEmployee = null;
+
+                        // Optionally close modal
+                        setTimeout(() => {
+                            if (parent.closeAddPermissionModal) {
+                                parent.closeAddPermissionModal();
+                            }
+                        }, 1500);
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Failed to update employee');
+                }
+            } catch (error) {
+                console.error('Error updating employee:', error);
+                showError('Failed to update employee: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDatabases();
+        });
+    </script>
+</body>
+</html>

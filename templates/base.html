@@ -1,0 +1,583 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>Database Manager</title>#}
+{##}
+{#    <!-- Favicon -->#}
+{#    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Logo1.png') }}">#}
+{#    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='Logo1.png') }}">#}
+{##}
+{#    <!-- Tailwind CSS -->#}
+{#    <script src="https://cdn.tailwindcss.com"></script>#}
+{##}
+{#    <!-- Font Awesome -->#}
+{#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">#}
+{##}
+{#    <!-- Custom Styles -->#}
+{#    <style>#}
+{#        .text-decoration-none {#}
+{#            text-decoration: none;#}
+{#        }#}
+{##}
+{#        /* Custom scrollbar for tables */#}
+{#        .custom-scrollbar::-webkit-scrollbar {#}
+{#            width: 8px;#}
+{#            height: 8px;#}
+{#        }#}
+{##}
+{#        .custom-scrollbar::-webkit-scrollbar-track {#}
+{#            background: #f1f5f9;#}
+{#            border-radius: 4px;#}
+{#        }#}
+{##}
+{#        .custom-scrollbar::-webkit-scrollbar-thumb {#}
+{#            background: #cbd5e1;#}
+{#            border-radius: 4px;#}
+{#        }#}
+{##}
+{#        .custom-scrollbar::-webkit-scrollbar-thumb:hover {#}
+{#            background: #94a3b8;#}
+{#        }#}
+{##}
+{#        /* Loading spinner animation */#}
+{#        @keyframes spin {#}
+{#            from { transform: rotate(0deg); }#}
+{#            to { transform: rotate(360deg); }#}
+{#        }#}
+{##}
+{#        .fa-spin {#}
+{#            animation: spin 1s linear infinite;#}
+{#        }#}
+{##}
+{#        /* Modal backdrop blur effect */#}
+{#        .modal-backdrop {#}
+{#            backdrop-filter: blur(4px);#}
+{#        }#}
+{##}
+{#        /* Smooth transitions for all interactive elements */#}
+{#        button, a, input, select, textarea {#}
+{#            transition: all 0.2s ease-in-out;#}
+{#        }#}
+{##}
+{#        /* Focus ring for better accessibility */#}
+{#        button:focus,#}
+{#        input:focus,#}
+{#        select:focus,#}
+{#        textarea:focus {#}
+{#            outline: 2px solid #3b82f6;#}
+{#            outline-offset: 2px;#}
+{#        }#}
+{##}
+{#        /* Gradient text effect for headings */#}
+{#        .gradient-text {#}
+{#            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);#}
+{#            -webkit-background-clip: text;#}
+{#            -webkit-text-fill-color: transparent;#}
+{#            background-clip: text;#}
+{#        }#}
+{##}
+{#        /* Card hover effects */#}
+{#        .card-hover {#}
+{#            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;#}
+{#        }#}
+{##}
+{#        .card-hover:hover {#}
+{#            transform: translateY(-2px);#}
+{#            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);#}
+{#        }#}
+{##}
+{#        /* Table row hover effect */#}
+{#        .table-row-hover:hover {#}
+{#            background-color: #f8fafc;#}
+{#        }#}
+{##}
+{#        /* Success/Error message animations */#}
+{#        .message-slide-in {#}
+{#            animation: slideInFromTop 0.3s ease-out;#}
+{#        }#}
+{##}
+{#        @keyframes slideInFromTop {#}
+{#            from {#}
+{#                transform: translateY(-10px);#}
+{#                opacity: 0;#}
+{#            }#}
+{#            to {#}
+{#                transform: translateY(0);#}
+{#                opacity: 1;#}
+{#            }#}
+{#        }#}
+{##}
+{#        /* Button loading state */#}
+{#        .btn-loading {#}
+{#            position: relative;#}
+{#            color: transparent !important;#}
+{#        }#}
+{##}
+{#        .btn-loading::after {#}
+{#            content: '';#}
+{#            position: absolute;#}
+{#            width: 16px;#}
+{#            height: 16px;#}
+{#            top: 50%;#}
+{#            left: 50%;#}
+{#            margin-left: -8px;#}
+{#            margin-top: -8px;#}
+{#            border: 2px solid #ffffff;#}
+{#            border-radius: 50%;#}
+{#            border-top-color: transparent;#}
+{#            animation: spin 1s linear infinite;#}
+{#        }#}
+{##}
+{#        /* Responsive table wrapper */#}
+{#        .table-wrapper {#}
+{#            overflow-x: auto;#}
+{#            border-radius: 8px;#}
+{#            border: 1px solid #e2e8f0;#}
+{#        }#}
+{##}
+{#        .table-wrapper table {#}
+{#            min-width: 100%;#}
+{#        }#}
+{##}
+{#        /* Status badges */#}
+{#        .status-active {#}
+{#            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;#}
+{#        }#}
+{##}
+{#        .status-inactive {#}
+{#            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800;#}
+{#        }#}
+{##}
+{#        .status-pending {#}
+{#            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800;#}
+{#        }#}
+{#    </style>#}
+{##}
+{#    {% block extra_head %}{% endblock %}#}
+{#</head>#}
+{#<body class="bg-gray-50">#}
+{#    {% block content %}{% endblock %}#}
+{##}
+{#    <!-- JavaScript Dependencies -->#}
+{#    <script>#}
+{#        // Global utility functions#}
+{#        function getCsrfToken() {#}
+{#            const cookieValue = document.cookie#}
+{#                .split('; ')#}
+{#                .find(row => row.startsWith('csrftoken='))#}
+{#                ?.split('=')[1];#}
+{#            return cookieValue || '';#}
+{#        }#}
+{##}
+{#        function showNotification(message, type = 'info') {#}
+{#            const notification = document.createElement('div');#}
+{#            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 message-slide-in ${#}
+{#                type === 'success' ? 'bg-green-500 text-white' :#}
+{#                type === 'error' ? 'bg-red-500 text-white' :#}
+{#                type === 'warning' ? 'bg-yellow-500 text-white' :#}
+{#                'bg-blue-500 text-white'#}
+{#            }`;#}
+{##}
+{#            notification.innerHTML = `#}
+{#                <div class="flex items-center">#}
+{#                    <i class="fas ${#}
+{#                        type === 'success' ? 'fa-check-circle' :#}
+{#                        type === 'error' ? 'fa-exclamation-circle' :#}
+{#                        type === 'warning' ? 'fa-exclamation-triangle' :#}
+{#                        'fa-info-circle'#}
+{#                    } mr-2"></i>#}
+{#                    <span>${message}</span>#}
+{#                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">#}
+{#                        <i class="fas fa-times"></i>#}
+{#                    </button>#}
+{#                </div>#}
+{#            `;#}
+{##}
+{#            document.body.appendChild(notification);#}
+{##}
+{#            // Auto remove after 5 seconds#}
+{#            setTimeout(() => {#}
+{#                if (notification.parentElement) {#}
+{#                    notification.remove();#}
+{#                }#}
+{#            }, 5000);#}
+{#        }#}
+{##}
+{#        function formatFileSize(bytes) {#}
+{#            if (bytes === 0) return '0 Bytes';#}
+{#            const k = 1024;#}
+{#            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];#}
+{#            const i = Math.floor(Math.log(bytes) / Math.log(k));#}
+{#            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];#}
+{#        }#}
+{##}
+{#        function formatDate(dateString) {#}
+{#            const date = new Date(dateString);#}
+{#            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();#}
+{#        }#}
+{##}
+{#        function escapeHtml(unsafe) {#}
+{#            return unsafe#}
+{#                .replace(/&/g, "&amp;")#}
+{#                .replace(/</g, "&lt;")#}
+{#                .replace(/>/g, "&gt;")#}
+{#                .replace(/"/g, "&quot;")#}
+{#                .replace(/'/g, "&#039;");#}
+{#        }#}
+{##}
+{#        // Global error handler#}
+{#        window.addEventListener('error', function(e) {#}
+{#            console.error('Global error:', e.error);#}
+{#            showNotification('An unexpected error occurred. Please check the console for details.', 'error');#}
+{#        });#}
+{##}
+{#        // Global fetch error handler#}
+{#        window.addEventListener('unhandledrejection', function(e) {#}
+{#            console.error('Unhandled promise rejection:', e.reason);#}
+{#            showNotification('A network error occurred. Please try again.', 'error');#}
+{#        });#}
+{##}
+{#        // Keyboard shortcuts#}
+{#        document.addEventListener('keydown', function(e) {#}
+{#            // ESC key to close modals#}
+{#            if (e.key === 'Escape') {#}
+{#                const modals = document.querySelectorAll('.fixed.inset-0:not(.hidden)');#}
+{#                modals.forEach(modal => {#}
+{#                    modal.classList.add('hidden');#}
+{#                });#}
+{#            }#}
+{##}
+{#            // Ctrl/Cmd + K for search (if implemented)#}
+{#            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {#}
+{#                e.preventDefault();#}
+{#                const searchInput = document.querySelector('input[type="search"]');#}
+{#                if (searchInput) {#}
+{#                    searchInput.focus();#}
+{#                }#}
+{#            }#}
+{#        });#}
+{##}
+{#        // Initialize tooltips (if needed)#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            // Add any initialization code here#}
+{#            console.log('Base template loaded successfully');#}
+{#        });#}
+{#    </script>#}
+{##}
+{#    {% block extra_scripts %}{% endblock %}#}
+{#</body>#}
+{#</html>#}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Manager</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'Logo1.png' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'Logo1.png' %}">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom Styles -->
+    <style>
+        .text-decoration-none {
+            text-decoration: none;
+        }
+
+        /* Custom scrollbar for tables */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Loading spinner animation */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .fa-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Modal backdrop blur effect */
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+
+        /* Smooth transitions for all interactive elements */
+        button, a, input, select, textarea {
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Focus ring for better accessibility */
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Gradient text effect for headings */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Table row hover effect */
+        .table-row-hover:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Success/Error message animations */
+        .message-slide-in {
+            animation: slideInFromTop 0.3s ease-out;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Button loading state */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Responsive table wrapper */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-wrapper table {
+            min-width: 100%;
+        }
+
+        /* Status badges */
+        .status-active {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;
+        }
+
+        .status-inactive {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800;
+        }
+
+        .status-pending {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800;
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50">
+    {% block content %}{% endblock %}
+
+    <!-- JavaScript Dependencies -->
+    <script>
+        // Global utility functions
+        function getCsrfToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            // Also check for CSRF token in meta tag or input field
+            const metaToken = document.querySelector('meta[name="csrf-token"]');
+            if (metaToken) {
+                return metaToken.getAttribute('content');
+            }
+            const inputToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            if (inputToken) {
+                return inputToken.value;
+            }
+            return '';
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 message-slide-in ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                type === 'warning' ? 'bg-yellow-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' :
+                        type === 'error' ? 'fa-exclamation-circle' :
+                        type === 'warning' ? 'fa-exclamation-triangle' :
+                        'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            showNotification('An unexpected error occurred. Please check the console for details.', 'error');
+        });
+
+        // Global fetch error handler
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+            showNotification('A network error occurred. Please try again.', 'error');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // ESC key to close modals
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.fixed.inset-0:not(.hidden)');
+                modals.forEach(modal => {
+                    modal.classList.add('hidden');
+                });
+            }
+
+            // Ctrl/Cmd + K for search (if implemented)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.querySelector('input[type="search"]');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }
+        });
+
+        // Initialize tooltips (if needed)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add any initialization code here
+            console.log('Base template loaded successfully');
+        });
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
