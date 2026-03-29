@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d7e61249-4280-4651-8f5a-8bf6468c9f4c" name="Default" comment="" />
+    <list default="true" id="d7e61249-4280-4651-8f5a-8bf6468c9f4c" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/myApp/urls_sas.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/myApp/views_sas.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/admin/add_pg_user.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/admin/create_pg_sas_database.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/admin/delete_pg_sas_database.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/admin/grant_pg_access.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/templates/pg_database_explorer.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myApp/urls.py" afterPath="$PROJECT_DIR$/myApp/urls.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myApp/views.py" afterPath="$PROJECT_DIR$/myApp/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/dashboard.html" afterPath="$PROJECT_DIR$/templates/dashboard.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/login.html" afterPath="$PROJECT_DIR$/templates/login.html" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,78 +29,161 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="dashboard.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
+      <file leaf-file-name="pg_database_explorer.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/pg_database_explorer.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="11025">
-              <caret line="525" column="0" lean-forward="false" selection-start-line="525" selection-start-column="0" selection-end-line="525" selection-end-column="0" />
+            <state relative-caret-position="3298">
+              <caret line="194" column="41" lean-forward="false" selection-start-line="194" selection-start-column="41" selection-end-line="194" selection-end-column="41" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gorepAdmin/settings.py">
+      <file leaf-file-name="create_pg_sas_database.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/admin/create_pg_sas_database.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="546">
-              <caret line="27" column="19" lean-forward="false" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="19" />
+            <state relative-caret-position="17">
+              <caret line="446" column="27" lean-forward="false" selection-start-line="446" selection-start-column="27" selection-end-line="446" selection-end-column="27" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/myApp/views.py">
+      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="468">
-              <caret line="2746" column="46" lean-forward="false" selection-start-line="2746" selection-start-column="46" selection-end-line="2746" selection-end-column="46" />
+            <state relative-caret-position="272">
+              <caret line="16" column="20" lean-forward="true" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views_sas.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myApp/views_sas.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5508">
+              <caret line="335" column="10" lean-forward="false" selection-start-line="335" selection-start-column="10" selection-end-line="335" selection-end-column="10" />
               <folding>
-                <element signature="e#46#57#0" expanded="true" />
-                <marker date="1761059084566" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
-                <marker date="1761059084566" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
-                <marker date="1761059084566" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
-                <marker date="1761059084566" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
-                <marker date="1761059084566" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
-                <marker date="1761059084566" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
-                <marker date="1761059084566" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
-                <marker date="1761059084566" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
-                <marker date="1761059084566" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
-                <marker date="1761059084566" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
-                <marker date="1761059084566" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
-                <marker date="1761059084566" expanded="true" signature="31926:32100" ph="SELECT d.*, Devices" />
-                <marker date="1761059084566" expanded="true" signature="33897:33940" ph="SELECT * FRO... Devices" />
-                <marker date="1761059084566" expanded="true" signature="40655:40705" ph="SELECT COALE... Softwares" />
-                <marker date="1761059084566" expanded="true" signature="43208:43284" ph="SELECT custI... Customers" />
-                <marker date="1761059084566" expanded="true" signature="45501:45551" ph="SELECT COALE... Customers" />
-                <marker date="1761059084566" expanded="true" signature="47988:48041" ph="SELECT COALE... itemgroups" />
-                <marker date="1761059084566" expanded="true" signature="63999:64065" ph="SELECT empId... Employee" />
-                <marker date="1761059084566" expanded="true" signature="68595:68688" ph="SELECT COUNT... " />
-                <marker date="1761059084566" expanded="true" signature="75315:75365" ph="SELECT COALE... Softwares" />
-                <marker date="1761059084566" expanded="true" signature="78967:79051" ph="SELECT Group... ItemGroups" />
-                <marker date="1761059084566" expanded="true" signature="81032:81472" ph="CREATE TABLE... ItemGroups" />
-                <marker date="1761059084566" expanded="true" signature="81612:81664" ph="SELECT COALE... ItemGroups" />
-                <marker date="1761059084566" expanded="true" signature="81835:81907" ph="SELECT COUNT... ItemGroups" />
-                <marker date="1761059084566" expanded="true" signature="91647:92433" ph="CREATE TABLE... Attendance" />
-                <marker date="1761059084566" expanded="true" signature="93230:93841" ph="CREATE TABLE... TransactionDetails" />
-                <marker date="1761059084566" expanded="true" signature="94549:95029" ph="CREATE TABLE... Transaction" />
-                <marker date="1761059084566" expanded="true" signature="95582:96268" ph="CREATE TABLE... Tickets" />
-                <marker date="1761059084566" expanded="true" signature="97208:97798" ph="CREATE TABLE... Schedules" />
-                <marker date="1761059084566" expanded="true" signature="98434:98874" ph="CREATE TABLE... ItemGroups" />
-                <marker date="1761059084566" expanded="true" signature="99383:100407" ph="CREATE TABLE... Events" />
-                <marker date="1761059084566" expanded="true" signature="101507:101995" ph="CREATE TABLE... Employee" />
-                <marker date="1761059084566" expanded="true" signature="102568:103540" ph="CREATE TABLE... Customer" />
-                <marker date="1761059084566" expanded="true" signature="104642:105098" ph="CREATE TABLE... ChartOfCode" />
-                <marker date="1761059084566" expanded="true" signature="105641:106169" ph="CREATE TABLE... Schedule_details" />
+                <element signature="e#112#123#0" expanded="true" />
+                <marker date="1773057476744" expanded="true" signature="2266:2448" ph="SELECT datna... pg_database" />
+                <marker date="1773057476744" expanded="true" signature="2894:3008" ph="SELECT table... tables" />
+                <marker date="1773057476744" expanded="true" signature="3464:3704" ph="SELECT colum... columns" />
+                <marker date="1773057476744" expanded="true" signature="8166:10193" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="10301:11394" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="11502:11977" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="12082:12493" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="12594:13398" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="13736:14417" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="14652:15150" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="15381:16118" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="16584:16951" ph="CREATE TABLE... IF" />
+                <marker date="1773057476744" expanded="true" signature="36271:36321" ph="SELECT COALE... softwares" />
+                <marker date="1773057476744" expanded="true" signature="36521:36704" ph="INSERT INTO softwares... " />
+                <marker date="1773057476744" expanded="true" signature="46062:46203" ph="SELECT pg_te... pg_stat_activity" />
+                <marker date="1773057476744" expanded="true" signature="47875:47910" ph="DELETE FROM " />
+                <marker date="1773057476744" expanded="true" signature="51045:51091" ph="SELECT custi... softwares" />
+                <marker date="1773057476744" expanded="true" signature="51508:51640" ph="INSERT INTO customers... " />
+                <marker date="1773057476744" expanded="true" signature="51999:52052" ph="SELECT COALE... itemgroups" />
+                <marker date="1773057476744" expanded="true" signature="52375:52551" ph="INSERT INTO itemgroups... " />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/base.html">
+      <file leaf-file-name="tests.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myApp/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6636">
-              <caret line="316" column="0" lean-forward="false" selection-start-line="316" selection-start-column="0" selection-end-line="316" selection-end-column="0" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="delete_pg_sas_database.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/admin/delete_pg_sas_database.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4131">
+              <caret line="243" column="7" lean-forward="false" selection-start-line="243" selection-start-column="7" selection-end-line="243" selection-end-column="7" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".env" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.env">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="12" lean-forward="false" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myApp/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="46104">
+              <caret line="2734" column="35" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="2768" selection-end-column="16" />
+              <folding>
+                <marker date="1772952606823" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
+                <marker date="1772952606823" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
+                <marker date="1772952606823" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
+                <marker date="1772952606823" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
+                <marker date="1772952606823" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
+                <marker date="1772952606823" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
+                <marker date="1772952606823" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
+                <marker date="1772952606823" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
+                <marker date="1772952606823" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
+                <marker date="1772952606823" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
+                <marker date="1772952606823" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
+                <marker date="1772952606823" expanded="true" signature="32695:32869" ph="SELECT d.*, Devices" />
+                <marker date="1772952606823" expanded="true" signature="34666:34709" ph="SELECT * FRO... Devices" />
+                <marker date="1772952606823" expanded="true" signature="41424:41474" ph="SELECT COALE... Softwares" />
+                <marker date="1772952606823" expanded="true" signature="43977:44053" ph="SELECT custI... Customers" />
+                <marker date="1772952606823" expanded="true" signature="46270:46320" ph="SELECT COALE... Customers" />
+                <marker date="1772952606823" expanded="true" signature="48757:48810" ph="SELECT COALE... itemgroups" />
+                <marker date="1772952606823" expanded="true" signature="64768:64834" ph="SELECT empId... Employee" />
+                <marker date="1772952606823" expanded="true" signature="69364:69457" ph="SELECT COUNT... " />
+                <marker date="1772952606823" expanded="true" signature="76084:76134" ph="SELECT COALE... Softwares" />
+                <marker date="1772952606823" expanded="true" signature="79736:79820" ph="SELECT Group... ItemGroups" />
+                <marker date="1772952606823" expanded="true" signature="81801:82241" ph="CREATE TABLE... ItemGroups" />
+                <marker date="1772952606823" expanded="true" signature="82381:82433" ph="SELECT COALE... ItemGroups" />
+                <marker date="1772952606823" expanded="true" signature="82604:82676" ph="SELECT COUNT... ItemGroups" />
+                <marker date="1772952606823" expanded="true" signature="92416:93202" ph="CREATE TABLE... Attendance" />
+                <marker date="1772952606823" expanded="true" signature="93999:94610" ph="CREATE TABLE... TransactionDetails" />
+                <marker date="1772952606823" expanded="true" signature="95318:95798" ph="CREATE TABLE... Transaction" />
+                <marker date="1772952606823" expanded="true" signature="96351:97037" ph="CREATE TABLE... Tickets" />
+                <marker date="1772952606823" expanded="true" signature="97977:98567" ph="CREATE TABLE... Schedules" />
+                <marker date="1772952606823" expanded="true" signature="99203:99643" ph="CREATE TABLE... ItemGroups" />
+                <marker date="1772952606823" expanded="true" signature="100152:101176" ph="CREATE TABLE... Events" />
+                <marker date="1772952606823" expanded="true" signature="102276:102764" ph="CREATE TABLE... Employee" />
+                <marker date="1772952606823" expanded="true" signature="103337:104309" ph="CREATE TABLE... Customer" />
+                <marker date="1772952606823" expanded="true" signature="105411:105867" ph="CREATE TABLE... ChartOfCode" />
+                <marker date="1772952606823" expanded="true" signature="106410:106938" ph="CREATE TABLE... Schedule_details" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls_sas.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myApp/urls_sas.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="459">
+              <caret line="28" column="70" lean-forward="false" selection-start-line="28" selection-start-column="70" selection-end-line="28" selection-end-column="70" />
+              <folding>
+                <element signature="e#0#28#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myApp/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2669">
+              <caret line="158" column="55" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="171" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -97,43 +194,43 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>undefined</find>
-      <find>admin_api_update_employee_permission</find>
-      <find>infoSection</find>
-      <find>Add Permission</find>
-      <find>CpanelAPIClient</find>
-      <find>DatabaseMan</find>
-      <find>def admin_api_add_itemgroup(request):</find>
-      <find>api/manage/databases</find>
-      <find>cPanel DB Manager</find>
-      <find>Instructions:</find>
-      <find>Nepton12101210</find>
-      <find>DatabaseManager('neptononline.com', 'neptouia_shafi', 'SHIBU', 'neptouia_nepton')</find>
-      <find>software_data = {</find>
-      <find>'neptononline.com'</find>
-      <find>'neptouia_shafi'</find>
-      <find>SHIBU</find>
-      <find>&lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2</find>
-      <find>openAddLocationModal</find>
-      <find>def admin_verify_database_view(request):</find>
-      <find>CREATE TABLE `Tickets` (</find>
-      <find>'Tickets': {</find>
-      <find>let currentDatabase = null;</find>
-      <find>CREATE TABLE `Schedule_details` (</find>
-      <find>create_statement</find>
-      <find>Location</find>
-      <find>Dashboard loaded</find>
-      <find>Admin Functions</find>
-      <find>Dashboard databases available for child windows:</find>
-      <find>Raw database response: {'messages':</find>
-      <find>print(</find>
+      <find>admin/create-pg-sas-database/</find>
+      <find>create-pg-sas-database</find>
+      <find>def admin_api_pg_test_connection(request):</find>
+      <find>verify</find>
+      <find>/manage/devices/</find>
+      <find>admin_api_devices</find>
+      <find>path('manage/api/create-database/</find>
+      <find>def types_match(current_type, expected_type):</find>
+      <find>Attempting to connect to PostgreSQL</find>
+      <find>def delete_record</find>
+      <find>admin_api_pg_test_connection</find>
+      <find>admin_api_create_pg_database</find>
+      <find>PostgreSQLManager</find>
+      <find>/admin/api/pg/add-user/</find>
+      <find>PG_HOST = os.getenv('PG_HOST', 'localhost')</find>
+      <find>localhost</find>
+      <find>cPanel URL</find>
+      <find>PostgreSQL Databases</find>
+      <find>create database</find>
+      <find>openCreatePgDatabaseModal</find>
+      <find>expiry_date = datetime.now() + timedelta(days=expiry_years * 365)</find>
+      <find>registry_db = PostgreSQLManager</find>
+      <find>location</find>
+      <find>const payload = {</find>
+      <find>def dashboard_view(request):</find>
+      <find>{'laundry': 1, 'restaurant': 2, 'hrms': 3}</find>
+      <find>software_id_map = {'laundry': 1, 'restaurant': 2, 'hrms': 3}</find>
+      <find>&amp;gt</find>
+      <find>commonTablesList</find>
+      <find>COMMON_TABLES</find>
     </findStrings>
     <replaceStrings>
       <replace>neptouia_shafi</replace>
@@ -150,7 +247,16 @@
       <replace>DB_USER</replace>
       <replace>DatabaseManager(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT)</replace>
       <replace>#print(</replace>
+      <replace>manage/create-pg-sas-database/</replace>
+      <replace>manage</replace>
+      <replace>/manage/api/pg/test-connection/</replace>
+      <replace>/manage/api/pg/add-user/</replace>
+      <replace>/manage/api/pg/create-sas-customer/</replace>
+      <replace>&gt;</replace>
     </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -169,13 +275,22 @@
         <option value="$PROJECT_DIR$/templates/admin/create_database.html" />
         <option value="$PROJECT_DIR$/templates/admin/add_location.html" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/.env" />
         <option value="$PROJECT_DIR$/templates/admin/verify_database.html" />
-        <option value="$PROJECT_DIR$/myApp/urls.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/templates/admin/grant_pg_access.html" />
+        <option value="$PROJECT_DIR$/templates/pg_database_explorer.html" />
+        <option value="$PROJECT_DIR$/templates/admin/create_pg_database.html" />
+        <option value="$PROJECT_DIR$/templates/admin/add_pg_user.html" />
+        <option value="$PROJECT_DIR$/myApp/urls.py" />
         <option value="$PROJECT_DIR$/templates/login.html" />
-        <option value="$PROJECT_DIR$/templates/dashboard.html" />
         <option value="$PROJECT_DIR$/myApp/views.py" />
+        <option value="$PROJECT_DIR$/templates/dashboard.html" />
+        <option value="$PROJECT_DIR$/templates/admin/delete_pg_sas_database.html" />
+        <option value="$PROJECT_DIR$/myApp/urls_sas.py" />
+        <option value="$PROJECT_DIR$/.env" />
+        <option value="$PROJECT_DIR$/myApp/views_sas.py" />
+        <option value="$PROJECT_DIR$/templates/admin/create_pg_sas_database.html" />
       </list>
     </option>
   </component>
@@ -186,10 +301,13 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-9" />
-    <option name="y" value="-9" />
-    <option name="width" value="1938" />
-    <option name="height" value="1048" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1616" />
+    <option name="height" value="876" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -206,8 +324,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -244,6 +362,38 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="templates" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gorepAdmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gorepAdmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gorepAdmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gorepAdmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="myApp" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -259,6 +409,7 @@
     <property name="restartRequiresConfirmation" value="false" />
     <property name="last.edited.regexp" value="" />
     <property name="SearchEverywhereHistoryKey" value="&#9;null&#9;null" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ai_caller_project" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -501,17 +652,17 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1048" extended-state="0" />
+    <frame x="-8" y="-8" width="1616" height="876" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20032224" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19215938" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25841185" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32839838" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3997735" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32975295" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -522,6 +673,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Concurrent Activities Diagram" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32951945" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -535,108 +687,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/admin/add_location.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5523">
-          <caret line="263" column="7" lean-forward="false" selection-start-line="263" selection-start-column="7" selection-end-line="263" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myApp/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
-          <caret line="46" column="1" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="46" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1533">
-          <caret line="73" column="29" lean-forward="false" selection-start-line="73" selection-start-column="29" selection-end-line="73" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/create_database.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8799">
-          <caret line="419" column="7" lean-forward="false" selection-start-line="419" selection-start-column="7" selection-end-line="419" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/device_management.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10185">
-          <caret line="485" column="14" lean-forward="false" selection-start-line="485" selection-start-column="14" selection-end-line="485" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/add_admin.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1491">
-          <caret line="71" column="0" lean-forward="false" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/add_permission.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5187">
-          <caret line="247" column="7" lean-forward="false" selection-start-line="247" selection-start-column="7" selection-end-line="247" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myApp/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="31416">
-          <caret line="1506" column="43" lean-forward="true" selection-start-line="1506" selection-start-column="43" selection-end-line="1506" selection-end-column="43" />
-          <folding>
-            <element signature="e#46#57#0" expanded="true" />
-            <marker date="1761059084566" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
-            <marker date="1761059084566" expanded="true" signature="31926:32100" ph="SELECT d.*, Devices" />
-            <marker date="1761059084566" expanded="true" signature="33897:33940" ph="SELECT * FRO... Devices" />
-            <marker date="1761059084566" expanded="true" signature="40655:40705" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="43208:43284" ph="SELECT custI... Customers" />
-            <marker date="1761059084566" expanded="true" signature="45501:45551" ph="SELECT COALE... Customers" />
-            <marker date="1761059084566" expanded="true" signature="47988:48041" ph="SELECT COALE... itemgroups" />
-            <marker date="1761059084566" expanded="true" signature="63999:64065" ph="SELECT empId... Employee" />
-            <marker date="1761059084566" expanded="true" signature="68595:68688" ph="SELECT COUNT... " />
-            <marker date="1761059084566" expanded="true" signature="75315:75365" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="78967:79051" ph="SELECT Group... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81032:81472" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81612:81664" ph="SELECT COALE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81835:81907" ph="SELECT COUNT... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="91647:92433" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="93230:93841" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="94549:95029" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="95582:96268" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="97208:97798" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="98434:98874" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="99383:100407" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="101507:101995" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="102568:103540" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="104642:105098" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="105641:106169" ph="CREATE TABLE... Schedule_details" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gorepAdmin/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2940">
-          <caret line="141" column="0" lean-forward="false" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/login.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1680">
@@ -648,7 +698,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8064">
           <caret line="384" column="14" lean-forward="false" selection-start-line="384" selection-start-column="14" selection-end-line="384" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -685,42 +734,41 @@
         <state relative-caret-position="12075">
           <caret line="584" column="28" lean-forward="false" selection-start-line="584" selection-start-column="28" selection-end-line="584" selection-end-column="28" />
           <folding>
-            <element signature="e#46#57#0" expanded="true" />
-            <marker date="1761059084566" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
-            <marker date="1761059084566" expanded="true" signature="31926:32100" ph="SELECT d.*, Devices" />
-            <marker date="1761059084566" expanded="true" signature="33897:33940" ph="SELECT * FRO... Devices" />
-            <marker date="1761059084566" expanded="true" signature="40655:40705" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="43208:43284" ph="SELECT custI... Customers" />
-            <marker date="1761059084566" expanded="true" signature="45501:45551" ph="SELECT COALE... Customers" />
-            <marker date="1761059084566" expanded="true" signature="47988:48041" ph="SELECT COALE... itemgroups" />
-            <marker date="1761059084566" expanded="true" signature="63999:64065" ph="SELECT empId... Employee" />
-            <marker date="1761059084566" expanded="true" signature="68595:68688" ph="SELECT COUNT... " />
-            <marker date="1761059084566" expanded="true" signature="75315:75365" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="78967:79051" ph="SELECT Group... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81032:81472" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81612:81664" ph="SELECT COALE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81835:81907" ph="SELECT COUNT... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="91647:92433" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="93230:93841" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="94549:95029" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="95582:96268" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="97208:97798" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="98434:98874" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="99383:100407" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="101507:101995" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="102568:103540" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="104642:105098" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="105641:106169" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="32695:32869" ph="SELECT d.*, Devices" />
+            <marker date="1772952606823" expanded="true" signature="34666:34709" ph="SELECT * FRO... Devices" />
+            <marker date="1772952606823" expanded="true" signature="41424:41474" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="43977:44053" ph="SELECT custI... Customers" />
+            <marker date="1772952606823" expanded="true" signature="46270:46320" ph="SELECT COALE... Customers" />
+            <marker date="1772952606823" expanded="true" signature="48757:48810" ph="SELECT COALE... itemgroups" />
+            <marker date="1772952606823" expanded="true" signature="64768:64834" ph="SELECT empId... Employee" />
+            <marker date="1772952606823" expanded="true" signature="69364:69457" ph="SELECT COUNT... " />
+            <marker date="1772952606823" expanded="true" signature="76084:76134" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="79736:79820" ph="SELECT Group... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="81801:82241" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82381:82433" ph="SELECT COALE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82604:82676" ph="SELECT COUNT... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="92416:93202" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="93999:94610" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="95318:95798" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="96351:97037" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="97977:98567" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="99203:99643" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="100152:101176" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="102276:102764" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="103337:104309" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="105411:105867" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="106410:106938" ph="CREATE TABLE... Schedule_details" />
           </folding>
         </state>
       </provider>
@@ -729,7 +777,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2940">
           <caret line="141" column="0" lean-forward="false" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -744,7 +791,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3339">
           <caret line="159" column="0" lean-forward="true" selection-start-line="159" selection-start-column="0" selection-end-line="159" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -781,42 +827,41 @@
         <state relative-caret-position="168">
           <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
-            <element signature="e#46#57#0" expanded="true" />
-            <marker date="1761059084566" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
-            <marker date="1761059084566" expanded="true" signature="31926:32100" ph="SELECT d.*, Devices" />
-            <marker date="1761059084566" expanded="true" signature="33897:33940" ph="SELECT * FRO... Devices" />
-            <marker date="1761059084566" expanded="true" signature="40655:40705" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="43208:43284" ph="SELECT custI... Customers" />
-            <marker date="1761059084566" expanded="true" signature="45501:45551" ph="SELECT COALE... Customers" />
-            <marker date="1761059084566" expanded="true" signature="47988:48041" ph="SELECT COALE... itemgroups" />
-            <marker date="1761059084566" expanded="true" signature="63999:64065" ph="SELECT empId... Employee" />
-            <marker date="1761059084566" expanded="true" signature="68595:68688" ph="SELECT COUNT... " />
-            <marker date="1761059084566" expanded="true" signature="75315:75365" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="78967:79051" ph="SELECT Group... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81032:81472" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81612:81664" ph="SELECT COALE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81835:81907" ph="SELECT COUNT... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="91647:92433" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="93230:93841" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="94549:95029" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="95582:96268" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="97208:97798" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="98434:98874" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="99383:100407" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="101507:101995" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="102568:103540" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="104642:105098" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="105641:106169" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="32695:32869" ph="SELECT d.*, Devices" />
+            <marker date="1772952606823" expanded="true" signature="34666:34709" ph="SELECT * FRO... Devices" />
+            <marker date="1772952606823" expanded="true" signature="41424:41474" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="43977:44053" ph="SELECT custI... Customers" />
+            <marker date="1772952606823" expanded="true" signature="46270:46320" ph="SELECT COALE... Customers" />
+            <marker date="1772952606823" expanded="true" signature="48757:48810" ph="SELECT COALE... itemgroups" />
+            <marker date="1772952606823" expanded="true" signature="64768:64834" ph="SELECT empId... Employee" />
+            <marker date="1772952606823" expanded="true" signature="69364:69457" ph="SELECT COUNT... " />
+            <marker date="1772952606823" expanded="true" signature="76084:76134" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="79736:79820" ph="SELECT Group... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="81801:82241" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82381:82433" ph="SELECT COALE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82604:82676" ph="SELECT COUNT... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="92416:93202" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="93999:94610" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="95318:95798" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="96351:97037" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="97977:98567" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="99203:99643" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="100152:101176" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="102276:102764" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="103337:104309" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="105411:105867" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="106410:106938" ph="CREATE TABLE... Schedule_details" />
           </folding>
         </state>
       </provider>
@@ -825,7 +870,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2247">
           <caret line="108" column="23" lean-forward="false" selection-start-line="108" selection-start-column="23" selection-end-line="108" selection-end-column="23" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -855,42 +899,41 @@
         <state relative-caret-position="63">
           <caret line="4" column="13" lean-forward="false" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
           <folding>
-            <element signature="e#46#57#0" expanded="true" />
-            <marker date="1761059084566" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
-            <marker date="1761059084566" expanded="true" signature="31926:32100" ph="SELECT d.*, Devices" />
-            <marker date="1761059084566" expanded="true" signature="33897:33940" ph="SELECT * FRO... Devices" />
-            <marker date="1761059084566" expanded="true" signature="40655:40705" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="43208:43284" ph="SELECT custI... Customers" />
-            <marker date="1761059084566" expanded="true" signature="45501:45551" ph="SELECT COALE... Customers" />
-            <marker date="1761059084566" expanded="true" signature="47988:48041" ph="SELECT COALE... itemgroups" />
-            <marker date="1761059084566" expanded="true" signature="63999:64065" ph="SELECT empId... Employee" />
-            <marker date="1761059084566" expanded="true" signature="68595:68688" ph="SELECT COUNT... " />
-            <marker date="1761059084566" expanded="true" signature="75315:75365" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="78967:79051" ph="SELECT Group... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81032:81472" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81612:81664" ph="SELECT COALE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81835:81907" ph="SELECT COUNT... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="91647:92433" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="93230:93841" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="94549:95029" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="95582:96268" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="97208:97798" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="98434:98874" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="99383:100407" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="101507:101995" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="102568:103540" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="104642:105098" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="105641:106169" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="32695:32869" ph="SELECT d.*, Devices" />
+            <marker date="1772952606823" expanded="true" signature="34666:34709" ph="SELECT * FRO... Devices" />
+            <marker date="1772952606823" expanded="true" signature="41424:41474" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="43977:44053" ph="SELECT custI... Customers" />
+            <marker date="1772952606823" expanded="true" signature="46270:46320" ph="SELECT COALE... Customers" />
+            <marker date="1772952606823" expanded="true" signature="48757:48810" ph="SELECT COALE... itemgroups" />
+            <marker date="1772952606823" expanded="true" signature="64768:64834" ph="SELECT empId... Employee" />
+            <marker date="1772952606823" expanded="true" signature="69364:69457" ph="SELECT COUNT... " />
+            <marker date="1772952606823" expanded="true" signature="76084:76134" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="79736:79820" ph="SELECT Group... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="81801:82241" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82381:82433" ph="SELECT COALE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82604:82676" ph="SELECT COUNT... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="92416:93202" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="93999:94610" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="95318:95798" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="96351:97037" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="97977:98567" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="99203:99643" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="100152:101176" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="102276:102764" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="103337:104309" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="105411:105867" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="106410:106938" ph="CREATE TABLE... Schedule_details" />
           </folding>
         </state>
       </provider>
@@ -899,94 +942,10 @@
     <entry file="file://$PROJECT_DIR$/templates/add_record.html" />
     <entry file="file://$PROJECT_DIR$/templates/sql_executor.html" />
     <entry file="file://$PROJECT_DIR$/templates/table_view.html" />
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="12" column="33" lean-forward="false" selection-start-line="12" selection-start-column="33" selection-end-line="12" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/add_admin.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="363">
-          <caret line="83" column="14" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="234" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/add_location.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="489">
-          <caret line="75" column="4" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="363" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/add_permission.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="313" column="29" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="453" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/create_database.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10878">
-          <caret line="518" column="20" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="524" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/database_explorer.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22197">
-          <caret line="1057" column="0" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="1068" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="84">
           <caret line="4" column="10" lean-forward="false" selection-start-line="4" selection-start-column="10" selection-end-line="4" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/device_management.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2709">
-          <caret line="129" column="49" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="487" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/verify_database.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="508" column="9" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="509" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/login.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="322" column="93" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="329" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.env">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="13" column="33" lean-forward="true" selection-start-line="13" selection-start-column="33" selection-end-line="13" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myApp/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="62" column="48" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -997,72 +956,249 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gorepAdmin/settings.py">
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="546">
-          <caret line="27" column="19" lean-forward="false" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="19" />
-          <folding />
+        <state relative-caret-position="6216">
+          <caret line="296" column="0" lean-forward="false" selection-start-line="296" selection-start-column="0" selection-end-line="296" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
+    <entry file="file://$PROJECT_DIR$/gorepAdmin/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6636">
-          <caret line="316" column="0" lean-forward="false" selection-start-line="316" selection-start-column="0" selection-end-line="316" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="490">
+          <caret line="27" column="19" lean-forward="false" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myApp/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/add_pg_user.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="151">
+          <caret line="172" column="66" lean-forward="false" selection-start-line="172" selection-start-column="66" selection-end-line="172" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/home.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="16" column="31" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="75" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/verify_database.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="557">
+          <caret line="508" column="9" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="509" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/device_management.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="263">
+          <caret line="115" column="38" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="487" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/add_permission.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="174">
+          <caret line="305" column="59" lean-forward="true" selection-start-line="305" selection-start-column="59" selection-end-line="305" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/add_location.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="521">
+          <caret line="312" column="72" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="363" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/add_admin.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="143">
+          <caret line="48" column="32" lean-forward="true" selection-start-line="48" selection-start-column="32" selection-end-line="48" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/grant_pg_access.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1764">
+          <caret line="84" column="50" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="112" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/database_explorer.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="14" column="24" lean-forward="false" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="282" column="25" lean-forward="false" selection-start-line="282" selection-start-column="25" selection-end-line="282" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11025">
-          <caret line="525" column="0" lean-forward="false" selection-start-line="525" selection-start-column="0" selection-end-line="525" selection-end-column="0" />
+        <state relative-caret-position="385">
+          <caret line="1018" column="0" lean-forward="true" selection-start-line="1018" selection-start-column="0" selection-end-line="1018" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/create_database.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5525">
+          <caret line="325" column="52" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="524" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/delete_pg_sas_database.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4131">
+          <caret line="243" column="7" lean-forward="false" selection-start-line="243" selection-start-column="7" selection-end-line="243" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/myApp/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="2746" column="46" lean-forward="false" selection-start-line="2746" selection-start-column="46" selection-end-line="2746" selection-end-column="46" />
+        <state relative-caret-position="46104">
+          <caret line="2734" column="35" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="2768" selection-end-column="16" />
           <folding>
-            <element signature="e#46#57#0" expanded="true" />
-            <marker date="1761059084566" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
-            <marker date="1761059084566" expanded="true" signature="31926:32100" ph="SELECT d.*, Devices" />
-            <marker date="1761059084566" expanded="true" signature="33897:33940" ph="SELECT * FRO... Devices" />
-            <marker date="1761059084566" expanded="true" signature="40655:40705" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="43208:43284" ph="SELECT custI... Customers" />
-            <marker date="1761059084566" expanded="true" signature="45501:45551" ph="SELECT COALE... Customers" />
-            <marker date="1761059084566" expanded="true" signature="47988:48041" ph="SELECT COALE... itemgroups" />
-            <marker date="1761059084566" expanded="true" signature="63999:64065" ph="SELECT empId... Employee" />
-            <marker date="1761059084566" expanded="true" signature="68595:68688" ph="SELECT COUNT... " />
-            <marker date="1761059084566" expanded="true" signature="75315:75365" ph="SELECT COALE... Softwares" />
-            <marker date="1761059084566" expanded="true" signature="78967:79051" ph="SELECT Group... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81032:81472" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81612:81664" ph="SELECT COALE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="81835:81907" ph="SELECT COUNT... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="91647:92433" ph="CREATE TABLE... Attendance" />
-            <marker date="1761059084566" expanded="true" signature="93230:93841" ph="CREATE TABLE... TransactionDetails" />
-            <marker date="1761059084566" expanded="true" signature="94549:95029" ph="CREATE TABLE... Transaction" />
-            <marker date="1761059084566" expanded="true" signature="95582:96268" ph="CREATE TABLE... Tickets" />
-            <marker date="1761059084566" expanded="true" signature="97208:97798" ph="CREATE TABLE... Schedules" />
-            <marker date="1761059084566" expanded="true" signature="98434:98874" ph="CREATE TABLE... ItemGroups" />
-            <marker date="1761059084566" expanded="true" signature="99383:100407" ph="CREATE TABLE... Events" />
-            <marker date="1761059084566" expanded="true" signature="101507:101995" ph="CREATE TABLE... Employee" />
-            <marker date="1761059084566" expanded="true" signature="102568:103540" ph="CREATE TABLE... Customer" />
-            <marker date="1761059084566" expanded="true" signature="104642:105098" ph="CREATE TABLE... ChartOfCode" />
-            <marker date="1761059084566" expanded="true" signature="105641:106169" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="15272:15970" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="16056:16587" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="16666:17082" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="17145:17703" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="17767:18285" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="18363:18747" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="18821:19717" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="19827:20251" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="20374:21218" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="21297:21697" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="21787:22275" ph="CREATE TABLE... Schedule_details" />
+            <marker date="1772952606823" expanded="true" signature="32695:32869" ph="SELECT d.*, Devices" />
+            <marker date="1772952606823" expanded="true" signature="34666:34709" ph="SELECT * FRO... Devices" />
+            <marker date="1772952606823" expanded="true" signature="41424:41474" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="43977:44053" ph="SELECT custI... Customers" />
+            <marker date="1772952606823" expanded="true" signature="46270:46320" ph="SELECT COALE... Customers" />
+            <marker date="1772952606823" expanded="true" signature="48757:48810" ph="SELECT COALE... itemgroups" />
+            <marker date="1772952606823" expanded="true" signature="64768:64834" ph="SELECT empId... Employee" />
+            <marker date="1772952606823" expanded="true" signature="69364:69457" ph="SELECT COUNT... " />
+            <marker date="1772952606823" expanded="true" signature="76084:76134" ph="SELECT COALE... Softwares" />
+            <marker date="1772952606823" expanded="true" signature="79736:79820" ph="SELECT Group... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="81801:82241" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82381:82433" ph="SELECT COALE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="82604:82676" ph="SELECT COUNT... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="92416:93202" ph="CREATE TABLE... Attendance" />
+            <marker date="1772952606823" expanded="true" signature="93999:94610" ph="CREATE TABLE... TransactionDetails" />
+            <marker date="1772952606823" expanded="true" signature="95318:95798" ph="CREATE TABLE... Transaction" />
+            <marker date="1772952606823" expanded="true" signature="96351:97037" ph="CREATE TABLE... Tickets" />
+            <marker date="1772952606823" expanded="true" signature="97977:98567" ph="CREATE TABLE... Schedules" />
+            <marker date="1772952606823" expanded="true" signature="99203:99643" ph="CREATE TABLE... ItemGroups" />
+            <marker date="1772952606823" expanded="true" signature="100152:101176" ph="CREATE TABLE... Events" />
+            <marker date="1772952606823" expanded="true" signature="102276:102764" ph="CREATE TABLE... Employee" />
+            <marker date="1772952606823" expanded="true" signature="103337:104309" ph="CREATE TABLE... Customer" />
+            <marker date="1772952606823" expanded="true" signature="105411:105867" ph="CREATE TABLE... ChartOfCode" />
+            <marker date="1772952606823" expanded="true" signature="106410:106938" ph="CREATE TABLE... Schedule_details" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myApp/urls_sas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="28" column="70" lean-forward="false" selection-start-line="28" selection-start-column="70" selection-end-line="28" selection-end-column="70" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/pg_database_explorer.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3298">
+          <caret line="194" column="41" lean-forward="false" selection-start-line="194" selection-start-column="41" selection-end-line="194" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.env">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="12" lean-forward="false" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myApp/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myApp/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2669">
+          <caret line="158" column="55" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="171" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myApp/views_sas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5508">
+          <caret line="335" column="10" lean-forward="false" selection-start-line="335" selection-start-column="10" selection-end-line="335" selection-end-column="10" />
+          <folding>
+            <element signature="e#112#123#0" expanded="true" />
+            <marker date="1773057476744" expanded="true" signature="2266:2448" ph="SELECT datna... pg_database" />
+            <marker date="1773057476744" expanded="true" signature="2894:3008" ph="SELECT table... tables" />
+            <marker date="1773057476744" expanded="true" signature="3464:3704" ph="SELECT colum... columns" />
+            <marker date="1773057476744" expanded="true" signature="8166:10193" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="10301:11394" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="11502:11977" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="12082:12493" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="12594:13398" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="13736:14417" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="14652:15150" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="15381:16118" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="16584:16951" ph="CREATE TABLE... IF" />
+            <marker date="1773057476744" expanded="true" signature="36271:36321" ph="SELECT COALE... softwares" />
+            <marker date="1773057476744" expanded="true" signature="36521:36704" ph="INSERT INTO softwares... " />
+            <marker date="1773057476744" expanded="true" signature="46062:46203" ph="SELECT pg_te... pg_stat_activity" />
+            <marker date="1773057476744" expanded="true" signature="47875:47910" ph="DELETE FROM " />
+            <marker date="1773057476744" expanded="true" signature="51045:51091" ph="SELECT custi... softwares" />
+            <marker date="1773057476744" expanded="true" signature="51508:51640" ph="INSERT INTO customers... " />
+            <marker date="1773057476744" expanded="true" signature="51999:52052" ph="SELECT COALE... itemgroups" />
+            <marker date="1773057476744" expanded="true" signature="52375:52551" ph="INSERT INTO itemgroups... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/create_pg_sas_database.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="446" column="27" lean-forward="false" selection-start-line="446" selection-start-column="27" selection-end-line="446" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="20" lean-forward="true" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+          <folding />
         </state>
       </provider>
     </entry>

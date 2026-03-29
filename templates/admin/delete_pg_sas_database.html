@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete SAS Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 p-6">
+
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <div class="flex items-center space-x-3 mb-2">
+            <div class="h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-trash-alt text-red-600 text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-gray-900">Delete SAS Database</h1>
+                <p class="text-sm text-gray-500">Permanently remove a PostgreSQL SAS database</p>
+            </div>
+        </div>
+
+        <!-- Warning Banner -->
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-exclamation-triangle text-red-500 mt-0.5"></i>
+                <div>
+                    <p class="text-sm font-semibold text-red-800">This action is irreversible</p>
+                    <p class="text-sm text-red-700 mt-1">
+                        Deleting a database will permanently remove all its tables and data,
+                        and remove the entry from the Softwares registry.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+
+        <!-- Database Selection -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Select Database to Delete <span class="text-red-500">*</span>
+            </label>
+            <select id="databaseSelect"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white">
+                <option value="">Loading databases...</option>
+            </select>
+        </div>
+
+        <!-- Database User (optional drop) -->
+        <div id="userSection" class="hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Associated Database User</label>
+            <input type="text" id="databaseUser" placeholder="e.g. sas_mydb_user"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+            <p class="text-xs text-gray-500 mt-1">Leave blank to keep the user, or enter the username to also drop it.</p>
+
+            <label class="flex items-center space-x-2 mt-3 cursor-pointer">
+                <input type="checkbox" id="dropUserCheck" class="w-4 h-4 text-red-600 rounded">
+                <span class="text-sm text-gray-700">Also drop the database user</span>
+            </label>
+        </div>
+
+        <!-- Confirmation Input -->
+        <div id="confirmSection" class="hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Type <span id="confirmDbName" class="font-mono font-bold text-red-600"></span> to confirm deletion
+            </label>
+            <input type="text" id="confirmInput" placeholder="Type database name to confirm"
+                   class="w-full px-4 py-3 border border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-red-50"
+                   oninput="checkConfirmation()">
+        </div>
+
+        <!-- Connection Info (readonly) -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Connection Info</p>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+                <div><span class="text-gray-500">Host:</span> <span class="font-medium text-gray-800">{{ pg_host }}</span></div>
+                <div><span class="text-gray-500">Port:</span> <span class="font-medium text-gray-800">{{ pg_port }}</span></div>
+                <div><span class="text-gray-500">Admin User:</span> <span class="font-medium text-gray-800">{{ pg_user }}</span></div>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="hidden rounded-lg p-4 text-sm"></div>
+
+        <!-- Actions -->
+        <div class="flex justify-end space-x-3 pt-2">
+            <button type="button" onclick="window.parent.closeAdminModal()"
+                    class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                Cancel
+            </button>
+            <button id="deleteBtn" onclick="deleteDatabase()" disabled
+                    class="px-5 py-2.5 text-sm font-semibold text-white bg-red-400 rounded-lg cursor-not-allowed transition flex items-center space-x-2">
+                <i class="fas fa-trash-alt"></i>
+                <span>Delete Database</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load databases on page load
+    document.addEventListener('DOMContentLoaded', loadDatabases);
+
+    async function loadDatabases() {
+        try {
+            const response = await fetch('/manage/api/pg/databases/');
+            const data = await response.json();
+
+            const select = document.getElementById('databaseSelect');
+            if (data.success && data.databases.length > 0) {
+                select.innerHTML = '<option value="">— Select a database —</option>' +
+                    data.databases.map(db => `<option value="${db}">${db}</option>`).join('');
+            } else {
+                select.innerHTML = '<option value="">No databases found</option>';
+            }
+        } catch (err) {
+            document.getElementById('databaseSelect').innerHTML = '<option value="">Failed to load databases</option>';
+        }
+    }
+
+    document.getElementById('databaseSelect').addEventListener('change', function () {
+        const selected = this.value;
+        const userSection = document.getElementById('userSection');
+        const confirmSection = document.getElementById('confirmSection');
+        const confirmDbName = document.getElementById('confirmDbName');
+        const confirmInput = document.getElementById('confirmInput');
+
+        if (selected) {
+            userSection.classList.remove('hidden');
+            confirmSection.classList.remove('hidden');
+            confirmDbName.textContent = selected;
+            confirmInput.value = '';
+            checkConfirmation();
+        } else {
+            userSection.classList.add('hidden');
+            confirmSection.classList.add('hidden');
+            document.getElementById('deleteBtn').disabled = true;
+            document.getElementById('deleteBtn').className =
+                'px-5 py-2.5 text-sm font-semibold text-white bg-red-400 rounded-lg cursor-not-allowed transition flex items-center space-x-2';
+        }
+    });
+
+    function checkConfirmation() {
+        const selected = document.getElementById('databaseSelect').value;
+        const typed = document.getElementById('confirmInput').value;
+        const btn = document.getElementById('deleteBtn');
+
+        if (selected && typed === selected) {
+            btn.disabled = false;
+            btn.className = 'px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition flex items-center space-x-2 cursor-pointer';
+        } else {
+            btn.disabled = true;
+            btn.className = 'px-5 py-2.5 text-sm font-semibold text-white bg-red-400 rounded-lg cursor-not-allowed transition flex items-center space-x-2';
+        }
+    }
+
+    async function deleteDatabase() {
+        const databaseName = document.getElementById('databaseSelect').value;
+        const dropUser     = document.getElementById('dropUserCheck').checked;
+        const databaseUser = document.getElementById('databaseUser').value.trim();
+        const statusDiv    = document.getElementById('statusMessage');
+        const btn          = document.getElementById('deleteBtn');
+
+        if (!databaseName) return;
+
+        // Show loading state
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Deleting...</span>';
+        btn.className = 'px-5 py-2.5 text-sm font-semibold text-white bg-red-400 rounded-lg cursor-not-allowed transition flex items-center space-x-2';
+
+        statusDiv.className = 'rounded-lg p-4 text-sm bg-blue-50 border border-blue-200 text-blue-700';
+        statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting database...';
+        statusDiv.classList.remove('hidden');
+
+        try {
+            const response = await fetch('/manage/api/pg/delete-sas-database/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    database_name: databaseName,
+                    drop_user:     dropUser,
+                    database_user: databaseUser
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                statusDiv.className = 'rounded-lg p-4 text-sm bg-green-50 border border-green-200 text-green-800';
+                let html = `<p class="font-semibold mb-2"><i class="fas fa-check-circle mr-2"></i>Database deleted successfully</p>`;
+                html += `<ul class="space-y-1 text-xs">`;
+                html += `<li>✅ Database dropped: <strong>${databaseName}</strong></li>`;
+                if (data.results.user_dropped) html += `<li>✅ User dropped: <strong>${databaseUser}</strong></li>`;
+                if (data.results.software_entry_removed) html += `<li>✅ Softwares registry entry removed</li>`;
+                if (data.results.errors.length) {
+                    data.results.errors.forEach(e => { html += `<li>⚠️ ${e}</li>`; });
+                }
+                html += `</ul>`;
+                statusDiv.innerHTML = html;
+
+                // Disable form after success
+                document.getElementById('databaseSelect').disabled = true;
+                btn.className = 'hidden';
+
+                // Reload pg list in parent after a short delay
+                setTimeout(() => {
+                    if (window.parent && window.parent.location) {
+                        window.parent.location.reload();
+                    }
+                }, 2500);
+
+            } else {
+                statusDiv.className = 'rounded-lg p-4 text-sm bg-red-50 border border-red-200 text-red-800';
+                statusDiv.innerHTML = `<i class="fas fa-times-circle mr-2"></i><strong>Error:</strong> ${data.error}`;
+
+                // Re-enable button
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash-alt"></i><span>Delete Database</span>';
+                btn.className = 'px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition flex items-center space-x-2 cursor-pointer';
+            }
+
+        } catch (err) {
+            statusDiv.className = 'rounded-lg p-4 text-sm bg-red-50 border border-red-200 text-red-800';
+            statusDiv.innerHTML = `<i class="fas fa-times-circle mr-2"></i>Request failed: ${err.message}`;
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash-alt"></i><span>Delete Database</span>';
+            btn.className = 'px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition flex items-center space-x-2 cursor-pointer';
+        }
+    }
+
+    function getCsrfToken() {
+        return document.cookie.split('; ').find(r => r.startsWith('csrftoken='))?.split('=')[1] || '';
+    }
+</script>
+</body>
+</html>

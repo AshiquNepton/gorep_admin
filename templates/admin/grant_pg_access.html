@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grant PostgreSQL Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-key text-purple-600 mr-2"></i>Grant Database Access
+        </h2>
+
+        <!-- Connection Settings -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-blue-900 mb-4">
+                <i class="fas fa-plug mr-2"></i>PostgreSQL Connection
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Host</label>
+                    <input type="text" id="pgHost" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Port</label>
+                    <input type="number" id="pgPort" value="5432" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Username</label>
+                    <input type="text" id="pgUsername" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Password</label>
+                    <input type="password" id="pgPassword" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <button type="button" id="testConnectionBtn"
+                    class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <i class="fas fa-plug mr-2"></i>Test Connection & Load Databases
+            </button>
+            <div id="connectionStatus" class="mt-2 hidden"></div>
+        </div>
+
+        <form id="grantAccessForm" class="space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Grant Privileges</h3>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Database <span class="text-red-500">*</span>
+                    </label>
+                    <select id="database" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option value="">Test connection to load databases...</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Username <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="username" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                           placeholder="Enter username">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Privileges
+                    </label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" value="ALL" checked class="privilege-check mr-2">
+                            <span class="text-sm">ALL PRIVILEGES</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="SELECT" class="privilege-check mr-2">
+                            <span class="text-sm">SELECT</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="INSERT" class="privilege-check mr-2">
+                            <span class="text-sm">INSERT</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="UPDATE" class="privilege-check mr-2">
+                            <span class="text-sm">UPDATE</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" value="DELETE" class="privilege-check mr-2">
+                            <span class="text-sm">DELETE</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="window.parent.closeAdminModal()"
+                        class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                    <i class="fas fa-key mr-2"></i>Grant Access
+                </button>
+            </div>
+        </form>
+
+        <div id="result" class="mt-4 hidden"></div>
+    </div>

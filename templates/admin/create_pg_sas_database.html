@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create PostgreSQL SAS Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body class="bg-gray-50">
+<div class="p-6 max-w-4xl mx-auto">
+
+    <!-- STEP 1 — Database Creation Form -->
+    <div id="step1">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-database text-purple-600 mr-2"></i>Create PostgreSQL SAS Database
+        </h2>
+
+        <!-- Connection Settings -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-blue-900 mb-4">
+                <i class="fas fa-plug mr-2"></i>PostgreSQL Connection
+            </h3>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Host <span class="text-red-500">*</span></label>
+                        <input type="text" id="pgHost" value="{{ pg_host }}" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="localhost or IP address">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Port <span class="text-red-500">*</span></label>
+                        <input type="number" id="pgPort" value="{{ pg_port }}" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Admin Username <span class="text-red-500">*</span></label>
+                        <input type="text" id="pgUsername" value="{{ pg_user }}" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Admin Password <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="password" id="pgPassword" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                   placeholder="PostgreSQL admin password">
+                            <button type="button" onclick="toggleAdminPassword()"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye" id="adminPwdIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button type="button" id="testConnectionBtn"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-plug mr-2"></i>Test Connection
+                    </button>
+                    <div id="connectionStatus" class="hidden text-sm"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Creation Form -->
+        <form id="createPgSasDbForm" class="space-y-6">
+
+            <!-- Business Type -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-briefcase mr-2 text-purple-600"></i>Step 1 — Select Business Type
+                </h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="businessType" value="laundry" class="sr-only" onchange="onBusinessTypeChange(this)">
+                        <div class="business-card border-2 border-gray-200 rounded-xl p-5 text-center hover:border-purple-400 hover:bg-purple-50 transition-all">
+                            <div class="h-14 w-14 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-tshirt text-blue-600 text-2xl"></i>
+                            </div>
+                            <h4 class="font-semibold text-gray-900">Laundry</h4>
+                            <p class="text-xs text-gray-500 mt-1">Laundry & dry cleaning management</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="businessType" value="restaurant" class="sr-only" onchange="onBusinessTypeChange(this)">
+                        <div class="business-card border-2 border-gray-200 rounded-xl p-5 text-center hover:border-purple-400 hover:bg-purple-50 transition-all">
+                            <div class="h-14 w-14 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-utensils text-orange-600 text-2xl"></i>
+                            </div>
+                            <h4 class="font-semibold text-gray-900">Restaurant</h4>
+                            <p class="text-xs text-gray-500 mt-1">Restaurant & food service management</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="businessType" value="hrms" class="sr-only" onchange="onBusinessTypeChange(this)">
+                        <div class="business-card border-2 border-gray-200 rounded-xl p-5 text-center hover:border-purple-400 hover:bg-purple-50 transition-all">
+                            <div class="h-14 w-14 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-users text-green-600 text-2xl"></i>
+                            </div>
+                            <h4 class="font-semibold text-gray-900">HrMs</h4>
+                            <p class="text-xs text-gray-500 mt-1">HR & employee management system</p>
+                        </div>
+                    </label>
+                </div>
+                <p id="businessTypeError" class="text-red-500 text-sm mt-2 hidden">Please select a business type.</p>
+            </div>
+
+            <!-- Tables Preview -->
+            <div id="tablesPreview" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-table mr-2 text-purple-600"></i>Tables to be Created
+                </h3>
+                <div class="mb-4">
+                    <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">
+                        <i class="fas fa-layer-group mr-1 text-gray-400"></i> Common Tables (all business types)
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="commonTablesList"></div>
+                </div>
+                <div class="border-t pt-4">
+                    <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2" id="bizTableLabel">
+                        <i class="fas fa-star mr-1 text-yellow-500"></i> Business-Specific Tables
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="bizTablesList"></div>
+                </div>
+            </div>
+
+            <!-- Database Config -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-cogs mr-2 text-purple-600"></i>Step 2 — Database Configuration
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Database Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="databaseName" required pattern="[a-zA-Z0-9_]+"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                               placeholder="e.g., sas_customer_name">
+                        <p class="text-xs text-gray-500 mt-1">Only letters, numbers, and underscores allowed</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Database User <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="databaseUser" required pattern="[a-zA-Z0-9_]+"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                               placeholder="e.g., sas_user">
+                        <p class="text-xs text-gray-500 mt-1">User that will own and access the database</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            User Password <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" id="userPassword" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                               placeholder="Strong password for database user">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Expiry (Years)</label>
+                        <input type="number" id="expiryYears" value="1" min="1" max="10"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <p class="text-xs text-gray-500 mt-1">License expiry period</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeModal()"
+                        class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    Cancel
+                </button>
+                <button type="submit" id="createDbBtn"
+                        class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                    <i class="fas fa-plus mr-2"></i>Create SAS Database
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- LOADING STEP -->
+    <div id="loadingStep" class="hidden bg-white rounded-lg shadow-sm border">
+        <div class="p-8 text-center">
+            <div class="relative mb-6">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i class="fas fa-database text-purple-600 text-lg"></i>
+                </div>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2" id="loadingTitle">Creating Database...</h3>
+            <p class="text-gray-600 mb-4" id="loadingDescription">Please wait while we set up your SAS database.</p>
+
+            <div class="space-y-3 text-sm text-left max-w-md mx-auto">
+                <div class="flex items-center" id="prog1">
+                    <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-spinner fa-spin text-blue-600 text-xs"></i>
+                    </div>
+                    <span class="text-gray-700">Creating database...</span>
+                </div>
+                <div class="flex items-center" id="prog2">
+                    <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-clock text-gray-400 text-xs"></i>
+                    </div>
+                    <span class="text-gray-400">Creating user...</span>
+                </div>
+                <div class="flex items-center" id="prog3">
+                    <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-clock text-gray-400 text-xs"></i>
+                    </div>
+                    <span class="text-gray-400">Granting privileges...</span>
+                </div>
+                <div class="flex items-center" id="prog4">
+                    <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-clock text-gray-400 text-xs"></i>
+                    </div>
+                    <span class="text-gray-400">Creating common tables...</span>
+                </div>
+                <div class="flex items-center" id="prog5">
+                    <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-clock text-gray-400 text-xs"></i>
+                    </div>
+                    <span class="text-gray-400">Creating business-specific tables...</span>
+                </div>
+                <div class="flex items-center" id="prog6">
+                    <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-clock text-gray-400 text-xs"></i>
+                    </div>
+                    <span class="text-gray-400">Registering software entry...</span>
+                </div>
+            </div>
+            <div class="mt-6 text-xs text-gray-500">This may take a few moments. Please do not close this window.</div>
+        </div>
+    </div>
+
+    <!-- STEP 2 — Customer Details -->
+    <div id="step2" class="hidden bg-white rounded-lg shadow-sm border">
+        <div class="p-6 border-b">
+            <h2 class="text-2xl font-semibold text-gray-900">
+                <i class="fas fa-user-plus text-purple-600 mr-2"></i>Create Customer
+            </h2>
+            <p class="text-gray-600 mt-1">Step 2 of 2: Customer Information</p>
+            <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div class="flex items-center text-green-800">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span class="text-sm font-medium">
+                        SAS database <strong id="createdDbName"></strong> created successfully with all tables!
+                    </span>
+                </div>
+                <div class="mt-1 text-xs text-green-700 pl-6" id="createdDbMeta"></div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <form id="createCustomerForm" class="space-y-5">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Customer Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="customerName" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                           placeholder="Enter customer / company name">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Location <span class="text-red-500">*</span></label>
+                    <input type="text" id="customerLocation" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                           placeholder="Enter customer location">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username <span class="text-red-500">*</span></label>
+                    <input type="text" id="adminUsername" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                           placeholder="Login username for this customer">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
+                    <input type="password" id="adminPassword" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                           placeholder="Login password">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Expiry Date <span class="text-red-500">*</span></label>
+                    <input type="date" id="customerExpiryDate" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="goBackToStep1()"
+                            class="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </button>
+                    <button type="submit" id="createCustomerBtn"
+                            class="px-6 py-3 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 transition">
+                        <i class="fas fa-user mr-1"></i> Create Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUCCESS STEP -->
+    <div id="successStep" class="hidden bg-white rounded-lg shadow-sm border">
+        <div class="p-8 text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <i class="fas fa-check text-green-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">All Done!</h3>
+            <p class="text-gray-600 mb-2">SAS database and customer have been created successfully.</p>
+            <div id="successSummary" class="text-sm text-gray-500 mb-6"></div>
+            <button onclick="closeModalAndRefresh()"
+                    class="px-8 py-3 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition">
+                <i class="fas fa-check mr-1"></i> Done
+            </button>
+        </div>
+    </div>
+
+    <!-- Error Messages -->
+    <div id="errorMessage" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="errorText"></span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Constants
+const COMMON_TABLES = ['Organization', 'ReportDetails', 'FilterDetails', 'ItemGroups','FormDesign'];
+const BIZ_TABLES = {
+    laundry:    { label: 'Laundry-Specific Tables',    tables: ['clothes'] },
+    restaurant: { label: 'Restaurant-Specific Tables', tables: ['waiter'] },
+    hrms:       { label: 'HrMs-Specific Tables',       tables: ['employee'] }
+};
+
+let createdDbInfo = {};
+
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta) return meta.getAttribute('content');
+    return document.cookie.split('; ')
+        .find(r => r.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+function showError(msg) {
+    document.getElementById('errorText').textContent = msg;
+    document.getElementById('errorMessage').classList.remove('hidden');
+    setTimeout(() => document.getElementById('errorMessage').classList.add('hidden'), 6000);
+}
+
+
+function closeModal() {
+    try { if (parent && parent.closeCreateDatabaseModal) parent.closeCreateDatabaseModal(); }
+    catch (e) { window.history.back(); }
+}
+
+function closeModalAndRefresh() {
+    try {
+        if (parent && parent.closeCreateDatabaseModal) {
+            parent.closeCreateDatabaseModal();
+            if (parent.location) parent.location.reload();
+        }
+    } catch (e) { window.location.reload(); }
+}
+
+function goBackToStep1() {
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+}
+
+function setDefaultExpiryDate() {
+    const years = parseInt(document.getElementById('expiryYears').value) || 1;
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + years);
+    document.getElementById('customerExpiryDate').value = d.toISOString().split('T')[0];
+}
+
+function toggleAdminPassword() {
+    const inp  = document.getElementById('pgPassword');
+    const icon = document.getElementById('adminPwdIcon');
+    if (inp.type === 'password') { inp.type = 'text';     icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+    else                         { inp.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+}
+
+function onBusinessTypeChange(radio) {
+    document.querySelectorAll('.business-card').forEach(c => {
+        c.classList.remove('border-purple-500', 'bg-purple-50', 'shadow-md');
+        c.classList.add('border-gray-200');
+    });
+    const card = radio.closest('label').querySelector('.business-card');
+    card.classList.remove('border-gray-200');
+    card.classList.add('border-purple-500', 'bg-purple-50', 'shadow-md');
+    document.getElementById('businessTypeError').classList.add('hidden');
+
+    const biz  = radio.value;
+    const info = BIZ_TABLES[biz];
+
+    document.getElementById('commonTablesList').innerHTML = COMMON_TABLES.map(t =>
+        `<div class="flex items-center text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2">
+            <i class="fas fa-table text-gray-400 mr-2 text-xs"></i>${t}
+        </div>`).join('');
+
+    document.getElementById('bizTableLabel').innerHTML =
+        `<i class="fas fa-star mr-1 text-yellow-500"></i> ${info.label}`;
+    document.getElementById('bizTablesList').innerHTML = info.tables.map(t =>
+        `<div class="flex items-center text-sm font-medium text-purple-800 bg-purple-50 border border-purple-200 rounded-lg px-3 py-2">
+            <i class="fas fa-check-circle text-purple-500 mr-2 text-xs"></i>${t}
+        </div>`).join('');
+
+    document.getElementById('tablesPreview').classList.remove('hidden');
+}
+
+function setProgStep(id, status) {
+    const el   = document.getElementById(id);
+    if (!el) return;
+    const box  = el.querySelector('div');
+    const icon = el.querySelector('i');
+    const text = el.querySelector('span');
+    if (status === 'active') {
+        box.className  = 'flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3';
+        icon.className = 'fas fa-spinner fa-spin text-blue-600 text-xs';
+        text.className = 'text-blue-700 font-medium';
+    } else if (status === 'done') {
+        box.className  = 'flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3';
+        icon.className = 'fas fa-check text-green-600 text-xs';
+        text.className = 'text-green-700';
+    } else if (status === 'error') {
+        box.className  = 'flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mr-3';
+        icon.className = 'fas fa-times text-red-600 text-xs';
+        text.className = 'text-red-700';
+    }
+}
+
+document.getElementById('testConnectionBtn').addEventListener('click', async function () {
+    const btn = this;
+    const orig = btn.innerHTML;
+    const statusDiv = document.getElementById('connectionStatus');
+
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Testing...';
+    btn.disabled = true;
+    statusDiv.classList.remove('hidden');
+    statusDiv.className = 'text-sm text-blue-600';
+    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Testing connection...';
+
+    try {
+        const res = await fetch('/manage/api/pg/test-connection/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+            body: JSON.stringify({
+                host:     document.getElementById('pgHost').value,
+                port:     parseInt(document.getElementById('pgPort').value),
+                username: document.getElementById('pgUsername').value,
+                password: document.getElementById('pgPassword').value
+            })
+        });
+        const result = await res.json();
+        if (result.success) {
+            statusDiv.className = 'text-sm text-green-600 flex items-center';
+            statusDiv.innerHTML = `<i class="fas fa-check-circle mr-2"></i>
+                <div><strong>Connection successful!</strong>
+                ${result.version   ? `<br><span class="text-xs">${result.version.split(',')[0]}</span>` : ''}
+                ${result.databases ? `<br><span class="text-xs">${result.databases.length} database(s) found</span>` : ''}
+                </div>`;
+        } else {
+            statusDiv.className = 'text-sm text-red-600 flex items-center';
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>
+                <div><strong>Failed!</strong><br><span class="text-xs">${result.error}</span></div>`;
+        }
+    } catch (e) {
+        statusDiv.className = 'text-sm text-red-600';
+        statusDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>Error: ${e.message}`;
+    } finally {
+        btn.innerHTML = orig;
+        btn.disabled = false;
+    }
+});
+
+document.getElementById('createPgSasDbForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const businessType = document.querySelector('input[name="businessType"]:checked');
+    if (!businessType) {
+        document.getElementById('businessTypeError').classList.remove('hidden');
+        document.getElementById('businessTypeError').scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+
+    const submitBtn = document.getElementById('createDbBtn');
+    const orig = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
+    submitBtn.disabled = true;
+
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('loadingStep').classList.remove('hidden');
+
+    const payload = {
+        host:           document.getElementById('pgHost').value,
+        port:           parseInt(document.getElementById('pgPort').value),
+        admin_username: document.getElementById('pgUsername').value,
+        admin_password: document.getElementById('pgPassword').value,
+        database_name:  document.getElementById('databaseName').value,
+        database_user:  document.getElementById('databaseUser').value,
+        user_password:  document.getElementById('userPassword').value,
+        expiry_years:   parseInt(document.getElementById('expiryYears').value),
+        business_type:  businessType.value
+    };
+
+    try {
+        const res    = await fetch('/manage/api/pg/create-sas-database/', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+            body:    JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.results) {
+            const r = result.results;
+            setProgStep('prog1', r.database_created      ? 'done' : 'error');
+            setProgStep('prog2', r.user_created           ? 'done' : 'error');
+            setProgStep('prog3', r.privileges_granted     ? 'done' : 'error');
+            setProgStep('prog4', r.common_tables_created > 0 ? 'done' : 'error');
+            setProgStep('prog5', r.biz_tables_created    > 0 ? 'done' : 'error');
+            setProgStep('prog6', r.software_entry_created ? 'done' : 'error');
+        }
+
+        await new Promise(r => setTimeout(r, 1200));
+
+        if (result.success) {
+            createdDbInfo = {
+                database_name:  payload.database_name,
+                database_user:  payload.database_user,
+                business_type:  payload.business_type,
+                cust_id:        result.results?.cust_id,
+                software_id:    result.results?.software_id,
+                tables_created: result.results?.tables_created?.length || 0,
+            };
+
+            document.getElementById('createdDbName').textContent = payload.database_name;
+            document.getElementById('createdDbMeta').textContent =
+                `Business: ${payload.business_type.toUpperCase()} · ` +
+                `Tables: ${createdDbInfo.tables_created} · ` +
+                (createdDbInfo.cust_id ? `Customer ID: ${createdDbInfo.cust_id}` : '');
+
+            setDefaultExpiryDate();
+
+            document.getElementById('loadingStep').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+
+        } else {
+            document.getElementById('loadingStep').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+            showError(result.error || 'Failed to create database');
+            submitBtn.innerHTML = orig;
+            submitBtn.disabled = false;
+        }
+
+    } catch (err) {
+        document.getElementById('loadingStep').classList.add('hidden');
+        document.getElementById('step1').classList.remove('hidden');
+        showError('Error: ' + err.message);
+        submitBtn.innerHTML = orig;
+        submitBtn.disabled = false;
+    }
+});
+
+document.getElementById('createCustomerForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('createCustomerBtn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Creating...';
+    btn.disabled = true;
+
+    const payload = {
+        customer_name: document.getElementById('customerName').value.trim(),
+        location:      document.getElementById('customerLocation').value.trim(),
+        expiry_date:   document.getElementById('customerExpiryDate').value,
+        username:      document.getElementById('adminUsername').value.trim(),
+        password:      document.getElementById('adminPassword').value,
+        cust_id:       createdDbInfo.cust_id,
+        software_id:   createdDbInfo.software_id,
+    };
+
+    try {
+        const res    = await fetch('/manage/api/pg/create-sas-customer/', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+            credentials: 'same-origin',
+            body:    JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            document.getElementById('successSummary').innerHTML = `
+                <div class="inline-flex flex-col items-start gap-1 mt-2 text-left bg-gray-50 rounded-lg px-4 py-3">
+                    <span>🗄️ Database: <strong>${createdDbInfo.database_name}</strong></span>
+                    <span>💼 Business: <strong>${(createdDbInfo.business_type || '').toUpperCase()}</strong></span>
+                    <span>👤 Customer: <strong>${payload.customer_name}</strong></span>
+                    <span>📍 Location: <strong>${payload.location}</strong></span>
+                    <span>📅 Expires: <strong>${payload.expiry_date}</strong></span>
+                    ${createdDbInfo.cust_id ? `<span>🆔 Customer ID: <strong>${createdDbInfo.cust_id}</strong></span>` : ''}
+                </div>`;
+
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('successStep').classList.remove('hidden');
+        } else {
+            showError(result.error || 'Failed to create customer');
+            btn.innerHTML = orig;
+            btn.disabled = false;
+        }
+    } catch (err) {
+        showError('Error: ' + err.message);
+        btn.innerHTML = orig;
+        btn.disabled = false;
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    setDefaultExpiryDate();
+    document.getElementById('expiryYears').addEventListener('input', setDefaultExpiryDate);
+});
+</script>
+</body>
+</html>

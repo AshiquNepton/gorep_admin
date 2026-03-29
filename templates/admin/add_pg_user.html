@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add PostgreSQL User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-user-plus text-blue-600 mr-2"></i>Add PostgreSQL User
+        </h2>
+
+        <!-- Connection Settings -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-blue-900 mb-4">
+                <i class="fas fa-plug mr-2"></i>PostgreSQL Connection
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Host</label>
+                    <input type="text" id="pgHost" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Port</label>
+                    <input type="number" id="pgPort" value="5432" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Username</label>
+                    <input type="text" id="pgUsername" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Password</label>
+                    <input type="password" id="pgPassword" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <button type="button" id="testConnectionBtn"
+                    class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <i class="fas fa-plug mr-2"></i>Test Connection
+            </button>
+            <div id="connectionStatus" class="mt-2 hidden"></div>
+        </div>
+
+        <form id="addPgUserForm" class="space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">New User Details</h3>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Username <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="username" required
+                           pattern="[a-zA-Z0-9_]+"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                           placeholder="e.g., analytics_user">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Password <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password" id="password" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                           placeholder="Enter secure password">
+                </div>
+
+                <div class="mb-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="createDb" class="mr-2">
+                        <span class="text-sm text-gray-700">Allow user to create databases</span>
+                    </label>
+                </div>
+
+                <div class="mb-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="createRole" class="mr-2">
+                        <span class="text-sm text-gray-700">Allow user to create roles</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="window.parent.closeAdminModal()"
+                        class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-user-plus mr-2"></i>Create User
+                </button>
+            </div>
+        </form>
+
+        <div id="result" class="mt-4 hidden"></div>
+    </div>
+
+    <script>
+    function getCsrfToken() {
+        return document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1] || '';
+    }
+
+    // Test Connection
+    document.getElementById('testConnectionBtn').addEventListener('click', async function() {
+        const btn = this;
+        const originalText = btn.innerHTML;
+        const statusDiv = document.getElementById('connectionStatus');
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Testing...';
+        btn.disabled = true;
+        statusDiv.classList.remove('hidden');
+        statusDiv.className = 'mt-2 text-sm text-blue-600';
+        statusDiv.textContent = 'Testing connection...';
+
+        try {
+            const response = await fetch('/manage/api/pg/test-connection/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    host: document.getElementById('pgHost').value,
+                    port: parseInt(document.getElementById('pgPort').value),
+                    username: document.getElementById('pgUsername').value,
+                    password: document.getElementById('pgPassword').value
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                statusDiv.className = 'mt-2 text-sm text-green-600';
+                statusDiv.textContent = '✓ Connection successful!';
+            } else {
+                statusDiv.className = 'mt-2 text-sm text-red-600';
+                statusDiv.textContent = '✗ ' + result.error;
+            }
+        } catch (error) {
+            statusDiv.className = 'mt-2 text-sm text-red-600';
+            statusDiv.textContent = '✗ Error: ' + error.message;
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+
+    document.getElementById('addPgUserForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
+        submitBtn.disabled = true;
+
+        const data = {
+            host: document.getElementById('pgHost').value,
+            port: parseInt(document.getElementById('pgPort').value),
+            admin_username: document.getElementById('pgUsername').value,
+            admin_password: document.getElementById('pgPassword').value,
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            createdb: document.getElementById('createDb').checked,
+            createrole: document.getElementById('createRole').checked
+        };
+
+        try {
+            const response = await fetch('/manage/api/pg/add-user/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            const resultDiv = document.getElementById('result');
+
+            if (result.success) {
+                resultDiv.className = 'mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded';
+                resultDiv.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${result.message}`;
+                resultDiv.classList.remove('hidden');
+
+                setTimeout(() => {
+                    this.reset();
+                    resultDiv.classList.add('hidden');
+                }, 2000);
+            } else {
+                resultDiv.className = 'mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
+                resultDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${result.error}`;
+                resultDiv.classList.remove('hidden');
+            }
+
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        } catch (error) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
+            resultDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>Error: ${error.message}`;
+            resultDiv.classList.remove('hidden');
+
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    </script>
+</body>
+</html>

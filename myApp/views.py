@@ -704,26 +704,38 @@ def dashboard_view(request):
     if 'user' not in request.session:
         return redirect('login')
 
+    # ── MySQL databases (via cPanel API) ──────────────────────────────────
     cpanel_client = CpanelAPIClient(
         request.session['cpanel_url'],
         request.session['cpanel_user'],
         request.session['cpanel_pass']
     )
+    mysql_databases = cpanel_client.get_databases()
+    db_users        = cpanel_client.get_database_users()
 
-    databases = cpanel_client.get_databases()
-    db_users = cpanel_client.get_database_users()
-
-    #print(f"Final databases list: {databases}")
-    #print(f"Final DB users list: {db_users}")
+    # ── PostgreSQL databases (via server .env credentials) ────────────────
+    pg_databases = []
+    try:
+        from .views_sas import PostgreSQLManager, PG_HOST, PG_USER, PG_PASSWORD, PG_PORT
+        if PG_USER and PG_PASSWORD:
+            pg_manager = PostgreSQLManager(PG_HOST, PG_USER, PG_PASSWORD, database='postgres', port=PG_PORT)
+            if pg_manager.connect():
+                pg_databases = pg_manager.get_databases()
+                pg_manager.close_connection()
+    except Exception as e:
+        print(f"Dashboard: Failed to load PostgreSQL databases: {e}")
 
     context = {
-        'databases': databases,
-        'db_users': db_users,
-        'user': request.session['user']
+        'mysql_databases': mysql_databases,
+        'pg_databases':    pg_databases,
+        'db_users':        db_users,
+        'user':            request.session['user'],
+
+        # Keep backward-compat key in case anything else references 'databases'
+        'databases':       mysql_databases,
     }
 
     return render(request, 'dashboard.html', context)
-
 
 def database_explorer_view(request, db_name):
     if 'user' not in request.session:
