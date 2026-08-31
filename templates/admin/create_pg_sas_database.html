@@ -141,6 +141,16 @@
                         <p class="text-xs text-gray-500 mt-1">Only letters, numbers, and underscores allowed</p>
                     </div>
                     <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Company Code
+                        <span class="ml-2 text-xs font-normal bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">auto-generated</span>
+                    </label>
+                    <input type="text" id="companyCode" readonly
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 font-mono tracking-widest cursor-not-allowed"
+                           placeholder="Loading...">
+                    <p class="text-xs text-gray-400 mt-1">Assigned automatically. Starts at NEP100, increments from existing records.</p>
+                </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Database User <span class="text-red-500">*</span>
                         </label>
@@ -163,6 +173,7 @@
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
                         <p class="text-xs text-gray-500 mt-1">License expiry period</p>
                     </div>
+
                 </div>
             </div>
 
@@ -502,7 +513,9 @@ document.getElementById('createPgSasDbForm').addEventListener('submit', async fu
         database_user:  document.getElementById('databaseUser').value,
         user_password:  document.getElementById('userPassword').value,
         expiry_years:   parseInt(document.getElementById('expiryYears').value),
-        business_type:  businessType.value
+        business_type:  businessType.value,
+        company_code: document.getElementById('companyCode').value,
+
     };
 
     try {
@@ -532,6 +545,7 @@ document.getElementById('createPgSasDbForm').addEventListener('submit', async fu
                 business_type:  payload.business_type,
                 cust_id:        result.results?.cust_id,
                 software_id:    result.results?.software_id,
+                company_code:   result.results?.company_code,   // ADD THIS
                 tables_created: result.results?.tables_created?.length || 0,
             };
 
@@ -579,6 +593,8 @@ document.getElementById('createCustomerForm').addEventListener('submit', async f
         password:      document.getElementById('adminPassword').value,
         cust_id:       createdDbInfo.cust_id,
         software_id:   createdDbInfo.software_id,
+        company_code: createdDbInfo.company_code,   // ADD THIS
+
     };
 
     try {
@@ -599,6 +615,7 @@ document.getElementById('createCustomerForm').addEventListener('submit', async f
                     <span>📍 Location: <strong>${payload.location}</strong></span>
                     <span>📅 Expires: <strong>${payload.expiry_date}</strong></span>
                     ${createdDbInfo.cust_id ? `<span>🆔 Customer ID: <strong>${createdDbInfo.cust_id}</strong></span>` : ''}
+                    ${createdDbInfo.company_code ? `<span>🏢 Company Code: <strong>${createdDbInfo.company_code}</strong></span>` : ''}
                 </div>`;
 
             document.getElementById('step2').classList.add('hidden');
@@ -615,10 +632,21 @@ document.getElementById('createCustomerForm').addEventListener('submit', async f
     }
 });
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     setDefaultExpiryDate();
     document.getElementById('expiryYears').addEventListener('input', setDefaultExpiryDate);
+
+    // Fetch next company code
+    try {
+        const res = await fetch('/manage/api/pg/next-company-code/');
+        const data = await res.json();
+        document.getElementById('companyCode').value = data.company_code || 'NEP100';
+    } catch (e) {
+        document.getElementById('companyCode').value = 'NEP100';
+    }
 });
+
+
 </script>
 </body>
 </html>

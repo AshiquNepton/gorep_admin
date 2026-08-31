@@ -1,4 +1,4 @@
-{#<!-- templates/dashboard.html -->#}
+{#templates/dashboard.html#}
 {#{% extends 'base.html' %}#}
 {##}
 {#{% block title %}Dashboard - cPanel Database Manager{% endblock %}#}
@@ -595,7 +595,7 @@
 
 
 
-<!-- templates/dashboard.html -->
+// <!-- templates/dashboard.html -->
 {% extends 'base.html' %}
 
 {% block title %}Dashboard - Database Manager{% endblock %}
@@ -745,9 +745,7 @@
                         <h3 class="text-lg font-semibold text-white mb-4">
                             <i class="fas fa-cogs mr-2"></i>Admin Functions
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                            <!-- NEW: Create SAS Database Button (Primary Action) -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     <button onclick="openCreatePgSasDatabaseModal()"
        class="flex items-center justify-center px-4 py-3 bg-white text-purple-700 rounded-lg hover:bg-purple-50 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg border-2 border-purple-200">
         <i class="fas fa-plus-circle mr-2"></i>Create SAS Database
@@ -756,6 +754,16 @@
     <button onclick="openDeletePgSasDatabaseModal()"
        class="flex items-center justify-center px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg">
         <i class="fas fa-trash-alt mr-2"></i>Delete SAS Database
+    </button>
+
+    <button onclick="openBackupPgSasDatabaseModal()"
+       class="flex items-center justify-center px-4 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg">
+        <i class="fas fa-download mr-2"></i>Backup Database
+    </button>
+
+    <button onclick="openRestorePgSasDatabaseModal()"
+       class="flex items-center justify-center px-4 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg">
+        <i class="fas fa-upload mr-2"></i>Restore Database
     </button>
 </div>
 
@@ -1016,6 +1024,17 @@ function openCreatePgSasDatabaseModal() {
 function openDeletePgSasDatabaseModal() {
     loadAdminModal('{% url "admin_delete_pg_sas_database" %}', 'Delete SAS Database');
 }
+
+
+function openBackupPgSasDatabaseModal() {
+    loadAdminModal('{% url "admin_backup_pg_sas_database" %}', 'Backup SAS Database');
+}
+
+function openRestorePgSasDatabaseModal() {
+    loadAdminModal('{% url "admin_restore_pg_sas_database" %}', 'Restore SAS Database');
+}
+
+
 
 {#function openCreatePgDatabaseModal() {#}
 {#    loadAdminModal('{% url "admin_create_pg_sas_database" %}', 'Create PostgreSQL Database');#}

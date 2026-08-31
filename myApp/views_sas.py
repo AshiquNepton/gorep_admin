@@ -13,23 +13,146 @@ import urllib.parse
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
+import subprocess
+import paramiko
+
 
 load_dotenv()
 
 # ============================================================================
 # SAS - POSTGRESQL CREDENTIALS (from .env)
 # ============================================================================
-PG_HOST = os.getenv('PG_HOST', 'localhost')
+# PG_HOST = os.getenv('PG_HOST', 'localhost')
+# PG_USER = os.getenv('PG_USER')
+# PG_PASSWORD = os.getenv('PG_PASSWORD')
+# PG_PORT = int(os.getenv('PG_PORT', 5432))
+# PG_DB = os.getenv('PG_DB', 'postgres')  # main PG registry DB (neptouia_erp)
+
+
+
+PG_HOST = '127.0.0.1'
+PG_PORT = int(os.getenv('PG_TUNNEL_LOCAL_PORT', 15432))
 PG_USER = os.getenv('PG_USER')
 PG_PASSWORD = os.getenv('PG_PASSWORD')
-PG_PORT = int(os.getenv('PG_PORT', 5432))
-PG_DB = os.getenv('PG_DB', 'postgres')  # main PG registry DB (neptouia_erp)
+PG_DB = os.getenv('PG_DB', 'postgres')
+
+
+BACKUP_DIR = os.getenv('PG_BACKUP_DIR', '/home/youruser/pg_backups')
+os.makedirs(BACKUP_DIR, exist_ok=True)
+
+
+# ============================================================================
+# SSH CREDENTIALS (VPS Remote Backup/Restore)
+# ============================================================================
+SSH_HOST = os.getenv('SSH_HOST', 'localhost')
+SSH_USER = os.getenv('SSH_USER', 'neptouia')
+SSH_PASSWORD = os.getenv('SSH_PASSWORD', '')
+SSH_PORT = int(os.getenv('SSH_PORT', 22))
+SSH_KEY_FILE = os.getenv('SSH_KEY_FILE', '')
+VPS_BACKUP_DIR = os.getenv('VPS_BACKUP_DIR', '/home/neptouia/public_html/ahique/pg_backups')
+
+
 
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_NAME = os.getenv('DB_NAME')
 DB_PORT = int(os.getenv('DB_PORT', 3306))
+
+
+
+
+
+
+
+# ============================================================================
+# SSH BACKUP MANAGER CLASS
+# ============================================================================
+
+class SSHBackupManager:
+    """Execute backup/restore commands on VPS via SSH."""
+    
+    def __init__(self, ssh_host, ssh_user, ssh_password, ssh_port=22, ssh_key_file=None):
+        self.ssh_host = ssh_host
+        self.ssh_user = ssh_user
+        self.ssh_password = ssh_password
+        self.ssh_port = ssh_port
+        self.ssh_key_file = ssh_key_file
+        self.client = None
+    
+    def connect(self):
+        """Connect to VPS via SSH."""
+        try:
+            self.client = paramiko.SSHClient()
+            self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            
+            if self.ssh_key_file and os.path.exists(self.ssh_key_file):
+                self.client.connect(
+                    self.ssh_host,
+                    port=self.ssh_port,
+                    username=self.ssh_user,
+                    key_filename=self.ssh_key_file,
+                    timeout=10
+                )
+            else:
+                self.client.connect(
+                    self.ssh_host,
+                    port=self.ssh_port,
+                    username=self.ssh_user,
+                    password=self.ssh_password,
+                    timeout=10
+                )
+            return True
+        except Exception as e:
+            print(f"# SSH ERROR: Connection failed: {e}")
+            return False
+    
+    def execute_command(self, cmd):
+        """Execute a shell command on VPS. Returns: (return_code, stdout, stderr)"""
+        if not self.client:
+            return 1, "", "Not connected"
+        
+        try:
+            stdin, stdout, stderr = self.client.exec_command(cmd, timeout=1800)
+            return stdout.channel.recv_exit_status(), stdout.read().decode(), stderr.read().decode()
+        except Exception as e:
+            return 1, "", str(e)
+    
+    def close(self):
+        """Close SSH connection."""
+        if self.client:
+            self.client.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ============================================================================
@@ -719,6 +842,7 @@ def sas_api_create_sas_database(request):
             user_password = data.get('user_password')
             expiry_years = data.get('expiry_years', 1)
             business_type = data.get('business_type', '').lower().strip()
+            company_code = data.get('company_code', '').strip()
 
             if not all([database_name, database_user, user_password]):
                 return JsonResponse({'success': False,
@@ -890,6 +1014,8 @@ def sas_api_create_sas_database(request):
 
                         results['software_entry_created'] = True
                         results['cust_id'] = next_cust_id
+                        results['company_code'] = company_code
+
                         print(f"# SAS: softwares entry saved to {PG_DB}, software={software_id}, custid={next_cust_id}")
 
                 except Exception as e:
@@ -1204,11 +1330,13 @@ def sas_api_create_sas_customer(request):
                                          'error': f'Software entry (custid={cust_id}) not found. Please recreate the database.'})
 
                 # ── Insert into customers ──────────────────────────────
+                company_code = data.get('company_code', '').strip()
+
                 rc.execute(
                     """INSERT INTO customers
-                       (custid, custname, location, expirydate)
-                       VALUES (%s, %s, %s, %s)""",
-                    (cust_id, customer_name, location, expiry_date)
+                       (custid, custname, location, expirydate, companycode)
+                       VALUES (%s, %s, %s, %s, %s)""",
+                    (cust_id, customer_name, location, expiry_date, company_code or None)
                 )
 
                 print(f"# SAS: customers row inserted, custid={cust_id}")
@@ -1257,7 +1385,7 @@ def sas_api_create_sas_customer(request):
                 return JsonResponse({'success': False, 'error': str(e)})
 
         except Exception as e:
-            import traceback;file
+            import traceback;
             traceback.print_exc()
             return JsonResponse({'success': False, 'error': str(e)})
 
@@ -1288,3 +1416,380 @@ def sas_debug_pg_connection(request):
     except Exception as e:
         lines.append(f"FAILED: {e}")
     return HttpResponse("<br>".join(lines))
+
+
+def sas_api_next_company_code(request):
+    try:
+        registry_db = PostgreSQLManager(PG_HOST, PG_USER, PG_PASSWORD, PG_DB, PG_PORT)
+        if not registry_db.connect():
+            return JsonResponse({'success': False, 'error': 'Cannot connect to registry DB',
+                                 'company_code': 'NEP100'})
+
+        rc = registry_db.connection.cursor()
+
+        # Cast the numeric suffix to INTEGER for correct ordering
+        rc.execute("""
+            SELECT companycode
+            FROM customers
+            WHERE companycode ~ '^NEP[0-9]+$'
+            ORDER BY CAST(SUBSTRING(companycode FROM 4) AS INTEGER) DESC
+            LIMIT 1
+        """)
+        row = rc.fetchone()
+        rc.close()
+        registry_db.close_connection()
+
+        if row and row[0]:
+            try:
+                next_num = int(row[0][3:]) + 1   # slice 'NEP' prefix, safer than replace
+            except ValueError:
+                next_num = 100
+        else:
+            next_num = 100
+
+        return JsonResponse({'success': True, 'company_code': f'NEP{next_num}'})
+
+    except Exception as e:
+        print(f"# SAS: next_company_code error: {e}")
+        # Return the error in response so you can debug it in browser devtools
+        return JsonResponse({'success': False, 'error': str(e), 'company_code': 'NEP100'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# New backup and restore settingss
+
+def sas_backup_pg_sas_database_view(request):
+    if 'user' not in request.session:
+        return redirect('login')
+    context = {'pg_host': PG_HOST, 'pg_port': PG_PORT, 'pg_user': PG_USER}
+    return render(request, 'admin/backup_pg_sas_database.html', context)
+
+
+def sas_restore_pg_sas_database_view(request):
+    if 'user' not in request.session:
+        return redirect('login')
+    context = {'pg_host': PG_HOST, 'pg_port': PG_PORT, 'pg_user': PG_USER}
+    return render(request, 'admin/restore_pg_sas_database.html', context)
+
+
+
+def _safe_backup_filename(database_name, timestamp=None):
+    """Build a safe filename for a backup, avoiding path traversal."""
+    ts = timestamp or datetime.now().strftime('%Y%m%d_%H%M%S')
+    safe_db = re.sub(r'[^a-zA-Z0-9_]', '_', database_name)
+    return f'{safe_db}__{ts}.dump'
+ 
+ 
+def _resolve_backup_path(filename):
+    """
+    Resolve a backup filename to an absolute path inside BACKUP_DIR only.
+    Raises ValueError if the resolved path escapes BACKUP_DIR (path traversal).
+    """
+    candidate = os.path.abspath(os.path.join(BACKUP_DIR, filename))
+    if not candidate.startswith(os.path.abspath(BACKUP_DIR) + os.sep):
+        raise ValueError('Invalid backup filename')
+    return candidate
+ 
+ 
+
+
+def _stat_line_to_dict(line):
+    """Parse a 'path|size|mtime_epoch' line from our stat command."""
+    parts = line.split('|')
+    if len(parts) != 3:
+        return None
+    fpath, size_str, mtime_str = parts
+    try:
+        size_bytes = int(size_str)
+        modified_at = datetime.fromtimestamp(int(mtime_str)).isoformat()
+    except ValueError:
+        return None
+    return {
+        'filename': fpath.split('/')[-1],
+        'vps_path': fpath,
+        'size_bytes': size_bytes,
+        'modified_at': modified_at,
+    }
+
+
+def sas_api_backup_database_ssh(request):
+    from django.http import JsonResponse
+    import json, re
+    from datetime import datetime
+
+    if 'user' not in request.session:
+        return JsonResponse({'success': False, 'error': 'Not authenticated'}, status=401)
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        database_name = data.get('database_name', '').strip()
+
+        if not database_name:
+            return JsonResponse({'success': False, 'error': 'Database name is required'})
+        if not re.match(r'^[a-zA-Z0-9_]+$', database_name):
+            return JsonResponse({'success': False, 'error': 'Invalid database name'})
+
+        ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+        safe_db = re.sub(r'[^a-zA-Z0-9_]', '_', database_name)
+        filename = f'{safe_db}__{ts}.dump'
+        vps_filepath = f'{VPS_BACKUP_DIR}/{filename}'
+
+        ssh_mgr = SSHBackupManager(SSH_HOST, SSH_USER, SSH_PASSWORD, SSH_PORT, SSH_KEY_FILE)
+        if not ssh_mgr.connect():
+            return JsonResponse({'success': False, 'error': 'Failed to connect to VPS via SSH'})
+
+        ssh_mgr.execute_command(f'mkdir -p {VPS_BACKUP_DIR}')
+
+        pg_dump_cmd = (
+            f'PGPASSWORD="{PG_PASSWORD}" /bin/pg_dump '
+            f'-h {PG_HOST} -p {PG_PORT} -U {PG_USER} -d {database_name} -Fc -f {vps_filepath}'
+        )
+
+        print(f"# SAS - BACKUP: Starting backup of {database_name} on VPS -> {vps_filepath}")
+        return_code, stdout, stderr = ssh_mgr.execute_command(pg_dump_cmd)
+
+        if return_code != 0:
+            ssh_mgr.close()
+            print(f"# SAS - BACKUP FAILED: {stderr}")
+            return JsonResponse({'success': False, 'error': f'pg_dump failed: {stderr.strip()}'})
+
+        # [FIX] single-quoted awk + stat gives exact byte size + mtime epoch
+        stat_cmd = f"stat -c '%s|%Y' {vps_filepath}"
+        _, stat_out, _ = ssh_mgr.execute_command(stat_cmd)
+        ssh_mgr.close()
+
+        size_bytes = 0
+        modified_at = datetime.now().isoformat()
+        stat_out = stat_out.strip()
+        if '|' in stat_out:
+            size_str, mtime_str = stat_out.split('|')
+            try:
+                size_bytes = int(size_str)
+                modified_at = datetime.fromtimestamp(int(mtime_str)).isoformat()
+            except ValueError:
+                pass
+
+        print(f"# SAS - BACKUP: Completed backup of {database_name} ({size_bytes} bytes)")
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Backup of "{database_name}" completed successfully',
+            'filename': filename,
+            'vps_path': vps_filepath,
+            'size_bytes': size_bytes,        # [FIX] matches frontend field name
+            'modified_at': modified_at,      # [FIX] added
+            'created_at': datetime.now().isoformat(),
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def sas_api_list_backups_ssh(request):
+    from django.http import JsonResponse
+    import re
+
+    if 'user' not in request.session:
+        return JsonResponse({'success': False, 'error': 'Not authenticated'}, status=401)
+
+    try:
+        db_filter = request.GET.get('database', '').strip()
+        safe_filter = re.sub(r'[^a-zA-Z0-9_]', '_', db_filter) if db_filter else None
+
+        ssh_mgr = SSHBackupManager(SSH_HOST, SSH_USER, SSH_PASSWORD, SSH_PORT, SSH_KEY_FILE)
+        if not ssh_mgr.connect():
+            return JsonResponse({'success': False, 'error': 'Failed to connect to VPS'})
+
+        # [FIX] stat with '|' delimiter, single-quoted format string (no shell $ expansion)
+        cmd = (
+            f"for f in {VPS_BACKUP_DIR}/*.dump; do "
+            f"[ -f \"$f\" ] && stat -c '%n|%s|%Y' \"$f\"; done 2>/dev/null"
+        )
+        return_code, stdout, stderr = ssh_mgr.execute_command(cmd)
+        ssh_mgr.close()
+
+        backups = []
+        if stdout.strip():
+            for line in stdout.strip().split('\n'):
+                parsed = _stat_line_to_dict(line)
+                if not parsed:
+                    continue
+                if safe_filter and not parsed['filename'].startswith(f'{safe_filter}__'):
+                    continue
+                backups.append(parsed)
+
+        # newest first
+        backups.sort(key=lambda b: b['modified_at'], reverse=True)
+
+        return JsonResponse({'success': True, 'backups': backups})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def sas_api_download_backup(request, filename):
+    """
+    GET /manage/api/pg/download-backup/<filename>/
+    Backups live on the VPS, not locally — fetch via SFTP (cache locally after first pull).
+    """
+    if 'user' not in request.session:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    filename = urllib.parse.unquote(filename)
+    if '/' in filename or '\\' in filename:
+        return JsonResponse({'error': 'Invalid filename'}, status=400)
+
+    try:
+        local_path = _resolve_backup_path(filename)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid filename'}, status=400)
+
+    # [FIX] fetch from VPS if we don't already have a local cached copy
+    if not os.path.isfile(local_path):
+        remote_path = f'{VPS_BACKUP_DIR}/{filename}'
+        try:
+            transport = paramiko.Transport((SSH_HOST, SSH_PORT))
+            if SSH_KEY_FILE and os.path.exists(SSH_KEY_FILE):
+                pkey = paramiko.RSAKey.from_private_key_file(SSH_KEY_FILE)
+                transport.connect(username=SSH_USER, pkey=pkey)
+            else:
+                transport.connect(username=SSH_USER, password=SSH_PASSWORD)
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            try:
+                sftp.stat(remote_path)
+            except IOError:
+                sftp.close()
+                transport.close()
+                return JsonResponse({'error': 'Backup file not found on VPS'}, status=404)
+
+            sftp.get(remote_path, local_path)
+            sftp.close()
+            transport.close()
+        except Exception as e:
+            return JsonResponse({'error': f'Failed to fetch backup from VPS: {str(e)}'}, status=500)
+
+    from django.http import FileResponse
+    return FileResponse(open(local_path, 'rb'), as_attachment=True, filename=filename)
+ 
+
+
+ 
+def sas_api_restore_database_ssh(request):
+    from django.http import JsonResponse
+    import json, re
+
+    if 'user' not in request.session:
+        return JsonResponse({'success': False, 'error': 'Not authenticated'}, status=401)
+
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        mode = data.get('mode', '').strip()
+        database_name = data.get('database_name', '').strip()
+        database_user = data.get('database_user', '').strip()
+        filename = data.get('filename', '').strip()
+
+        if not all([mode, database_name, filename]):
+            return JsonResponse({'success': False, 'error': 'mode, database_name, and filename are required'})
+        if mode not in ('new', 'drop_existing', 'merge'):
+            return JsonResponse({'success': False, 'error': 'mode must be one of: new, drop_existing, merge'})
+        if not re.match(r'^[a-zA-Z0-9_]+$', database_name):
+            return JsonResponse({'success': False, 'error': 'Invalid database name'})
+        if '/' in filename or '\\' in filename:
+            return JsonResponse({'success': False, 'error': 'Invalid filename'})
+
+        vps_filepath = f'{VPS_BACKUP_DIR}/{filename}'
+
+        ssh_mgr = SSHBackupManager(SSH_HOST, SSH_USER, SSH_PASSWORD, SSH_PORT, SSH_KEY_FILE)
+        if not ssh_mgr.connect():
+            return JsonResponse({'success': False, 'error': 'Failed to connect to VPS'})
+
+        check_cmd = f'[ -f {vps_filepath} ] && echo "exists" || echo "not found"'
+        _, stdout, _ = ssh_mgr.execute_command(check_cmd)
+        ssh_mgr.close()
+
+        if 'not found' in stdout:
+            return JsonResponse({'success': False, 'error': f'Backup file not found on VPS: {filename}'})
+
+        restore_cmd = (
+            f'PGPASSWORD="{PG_PASSWORD}" /bin/pg_restore '
+            f'-h {PG_HOST} -p {PG_PORT} -U {PG_USER} -d {database_name} '
+            f'--no-owner --no-privileges'
+        )
+        if mode == 'merge':
+            restore_cmd += ' --clean --if-exists'
+        restore_cmd += f' {vps_filepath}'
+
+        setup_cmd = ""
+        if mode in ('new', 'drop_existing'):
+            if mode == 'drop_existing':
+                setup_cmd = (
+                    f'PGPASSWORD="{PG_PASSWORD}" psql -h {PG_HOST} -p {PG_PORT} -U {PG_USER} -d postgres '
+                    f'-c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = \'{database_name}\' AND pid <> pg_backend_pid();" '
+                    f'&& PGPASSWORD="{PG_PASSWORD}" psql -h {PG_HOST} -p {PG_PORT} -U {PG_USER} -d postgres '
+                    f'-c "DROP DATABASE IF EXISTS {database_name};" '
+                )
+            setup_cmd += (
+                f'&& PGPASSWORD="{PG_PASSWORD}" psql -h {PG_HOST} -p {PG_PORT} -U {PG_USER} -d postgres '
+                f'-c "CREATE DATABASE {database_name} ENCODING \'UTF8\';"'
+            )
+            if database_user:
+                setup_cmd += (
+                    f' && PGPASSWORD="{PG_PASSWORD}" psql -h {PG_HOST} -p {PG_PORT} -U {PG_USER} -d postgres '
+                    f'-c "GRANT ALL PRIVILEGES ON DATABASE {database_name} TO {database_user};"'
+                )
+            setup_cmd += " && "
+
+        full_cmd = setup_cmd + restore_cmd
+
+        print(f"# SAS - RESTORE: mode={mode} target={database_name} file={vps_filepath}")
+
+        ssh_mgr = SSHBackupManager(SSH_HOST, SSH_USER, SSH_PASSWORD, SSH_PORT, SSH_KEY_FILE)
+        if not ssh_mgr.connect():
+            return JsonResponse({'success': False, 'error': 'Failed to connect to VPS'})
+
+        return_code, stdout, stderr = ssh_mgr.execute_command(full_cmd)
+        ssh_mgr.close()
+
+        if return_code != 0:
+            print(f"# SAS - RESTORE FAILED: {stderr}")
+            return JsonResponse({'success': False, 'error': f'Restore failed: {stderr.strip()}'})
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Database "{database_name}" restored successfully (mode={mode})'
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'error': str(e)})

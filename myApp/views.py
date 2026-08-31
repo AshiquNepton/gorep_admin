@@ -22,6 +22,14 @@ import urllib.parse
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pip._vendor import requests
+import logging
+
+logger = logging.getLogger('cpanel_manager')
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
+    logger.addHandler(_handler)
 
 # Load environment variables
 load_dotenv()
@@ -30,26 +38,45 @@ DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_NAME = os.getenv('DB_NAME')
 DB_PORT = int(os.getenv('DB_PORT', 3306))
+CPANEL_API_TOKEN = os.getenv('CPANEL_API_TOKEN')
 if not all([DB_HOST, DB_USER, DB_PASSWORD, DB_NAME]):
     raise ValueError("Missing critical database environment variables. Check your .env file.")
 
 
 class CpanelAPIClient:
-    def __init__(self, cpanel_url, username, password):
+    def __init__(self, cpanel_url, username, password=None, api_token=None):
         self.cpanel_url = cpanel_url.rstrip('/')
         self.username = username
         self.password = password
+        self.api_token = api_token or CPANEL_API_TOKEN
         self.session = requests.Session()
-        self.session.auth = (username, password)
 
+        if self.api_token:
+            logger.info(f"[cPanel Auth] Using API TOKEN auth (token starts with: {self.api_token[:6]}...)")
+            self.session.headers.update({
+                'Authorization': f'cpanel {self.username}:{self.api_token}'
+            })
+        else:
+            logger.info("[cPanel Auth] Using PASSWORD auth (no token found)")
+            self.session.auth = (username, password)
+
+    # --- In CpanelAPIClient.authenticate(), replace the method body ---
     def authenticate(self):
-        """Test cPanel authentication"""
+    # """Test cPanel authentication"""
         try:
-            url = f"{self.cpanel_url}/execute/CpanelApi/version"
+            url = f"{self.cpanel_url}/execute/Mysql/list_databases"
             response = self.session.get(url, timeout=10)
-            return response.status_code == 200
+            logger.info(f"[cPanel Auth] Status: {response.status_code}")
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    # A successful UAPI call has status=1 in the JSON body
+                    return data.get('status') == 1
+                except json.JSONDecodeError:
+                    return False
+            return False
         except Exception as e:
-            #print(f"Auth error: {e}")
+            logger.error(f"[cPanel Auth] Exception: {e}", exc_info=True)
             return False
 
     def get_databases(self):
@@ -449,22 +476,22 @@ class DatabaseManager:
             """,
 
             # Tickets table
-            """
-CREATE TABLE `Tickets` (
-`ticket_no` int(11) NOT NULL AUTO_INCREMENT,
-`customer_name` varchar(100) DEFAULT NULL,
-`mobile` varchar(20) DEFAULT NULL,
-`email` varchar(100) DEFAULT NULL,
-`service_type` varchar(50) DEFAULT NULL,
-`problem_description` text DEFAULT NULL,
-`ip_address` varchar(45) DEFAULT NULL,
-`created_at` datetime DEFAULT current_timestamp(),
-`ticket_status` int(11) DEFAULT 0,
-`schedule_status` int(11) DEFAULT 0,
-`narration` varchar(100) DEFAULT NULL,
-PRIMARY KEY (`ticket_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci
-""",
+             """
+            CREATE TABLE `Tickets` (
+            `ticket_no` int(11) NOT NULL AUTO_INCREMENT,
+            `customer_name` varchar(100) DEFAULT NULL,
+            `mobile` varchar(20) DEFAULT NULL,
+            `email` varchar(100) DEFAULT NULL,
+            `service_type` varchar(50) DEFAULT NULL,
+            `problem_description` text DEFAULT NULL,
+            `ip_address` varchar(45) DEFAULT NULL,
+            `created_at` datetime DEFAULT current_timestamp(),
+            `ticket_status` int(11) DEFAULT 0,
+            `schedule_status` int(11) DEFAULT 0,
+            `narration` varchar(100) DEFAULT NULL,
+            PRIMARY KEY (`ticket_no`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci
+            """,
             # Schedules table
             """
             CREATE TABLE `Schedules` (
@@ -686,15 +713,19 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
+        logger.info(f"[Login] Attempt for user={username}, cpanel_url={cpanel_url}")
+
         cpanel_client = CpanelAPIClient(cpanel_url, username, password)
 
         if cpanel_client.authenticate():
+            logger.info(f"[Login] Success for user={username}")
             request.session['cpanel_url'] = cpanel_url
             request.session['cpanel_user'] = username
             request.session['cpanel_pass'] = password
             request.session['user'] = username
             return redirect('dashboard')
         else:
+            logger.warning(f"[Login] Failed for user={username}, cpanel_url={cpanel_url}")
             messages.error(request, 'Invalid cPanel credentials or connection failed')
 
     return render(request, 'login.html')
